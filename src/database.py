@@ -1,5 +1,7 @@
+from typing import Annotated
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import mapped_column
 from config import settings
 
 
@@ -20,3 +22,6 @@ async def get_db():
         yield db
     finally:
         await db.close()
+
+
+intpk = Annotated[int, mapped_column(primary_key=True, index=True)]
