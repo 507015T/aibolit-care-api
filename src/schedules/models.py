@@ -1,6 +1,7 @@
 from typing import Optional
 from sqlalchemy import String, SmallInteger, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql.schema import CheckConstraint
 from database import Base, intpk
 from datetime import date
 
@@ -21,5 +22,9 @@ class MedicationSchedule(Base):
 
     user: Mapped["User"] = relationship("User", back_populates="schedules")
 
-
-
+    __table_args__ = (
+        CheckConstraint("duration_days > 0", name="check_correctness_duration_days"),
+        CheckConstraint(
+            "frequency >= 1 AND frequency <= 15", name="check_correctness_frequency"
+        ),
+    )
