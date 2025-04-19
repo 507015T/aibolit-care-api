@@ -4,7 +4,9 @@ from config import settings
 
 
 engine = create_async_engine(
-    settings.DB_URL, connect_args={"check_same_thread": False}, echo=settings.DB_ECHO
+    url=settings.DB_URL,
+    connect_args={"check_same_thread": False},
+    echo=settings.DB_ECHO,
 )
 SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
 
@@ -12,13 +14,7 @@ SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush
 class Base(DeclarativeBase): ...
 
 
-async def create_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-
 async def get_db():
-    await create_tables()
     db = SessionLocal()
     try:
         yield db
