@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter()
 
 
-@router.post("/schedules")
-async def index(
+@router.post("/schedule")
+async def create_schedule(
     schedule: schemas.MedicationScheduleCreate,
     db: AsyncSession = Depends(database.get_db),
 ):
@@ -15,5 +15,5 @@ async def index(
 
 
 @router.get("/schedules")
-async def get_all_schedules(db: AsyncSession = Depends(database.get_db)):
-    return await service.get_schedules(db)
+async def get_all_schedules(user_id: int, db: AsyncSession = Depends(database.get_db)):
+    return await service.get_schedules(user_id, db)

@@ -1,5 +1,6 @@
 from schedules import models
 from sqlalchemy import select
+from datetime import date
 
 
 async def create_schedule(schedule, db):
@@ -10,8 +11,12 @@ async def create_schedule(schedule, db):
     return db_schedule
 
 
-async def get_schedules(db):
+async def get_schedules(user_id, db):
 
-    result = await db.execute(select(models.MedicationSchedule))
+    result = await db.execute(
+        select(models.MedicationSchedule)
+        .where(models.MedicationSchedule.user_id == user_id)
+    )
+
     schedules = result.scalars().all()
     return {"schedules": schedules}
