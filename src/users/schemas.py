@@ -1,12 +1,11 @@
 from datetime import date
 from pydantic import BaseModel
+from pydantic import ConfigDict
 
 
 class UserBase(BaseModel):
-    id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserCreate(UserBase):
