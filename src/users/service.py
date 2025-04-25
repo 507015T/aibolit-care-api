@@ -1,13 +1,14 @@
-from users import models
 from sqlalchemy import select
+
+from users import models
 
 
 async def create_user(user, db):
-    db_users = models.User(**user.model_dump())
-    db.add(db_users)
+    db_user = models.User(**user.model_dump())
+    db.add(db_user)
     await db.commit()
-    await db.refresh(db_users)
-    return db_users
+    await db.refresh(db_user)
+    return db_user
 
 
 async def get_users(db):

@@ -1,9 +1,9 @@
 from typing import Annotated
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import mapped_column
-from config import settings
 
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase, mapped_column
+
+from config import settings
 
 engine = create_async_engine(
     url=settings.DB_URL,
