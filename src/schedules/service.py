@@ -23,7 +23,7 @@ async def get_schedules(user_id, db):
         .filter(
             or_(
                 models.MedicationSchedule.end_date >= date.today(),
-                models.MedicationSchedule.end_date is None,
+                models.MedicationSchedule.end_date.is_(None),
             ),
         ),
     )
