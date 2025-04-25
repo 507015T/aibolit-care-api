@@ -28,3 +28,32 @@ dev = [
 
 [project.urls]
 Repository = "https://github.com/507015T/medication-schedules-api"
+
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.pytest_cache
+  | \.venv
+  | \.vscode
+  | \.idea
+  | \alembic
+)
+'''
+
+[tool.ruff]
+target-version = "py38"
+line-length = 120
+exclude = [
+  ".venv", "alembic"
+]
+lint.ignore = [
+  "F821", # Too many arguments to function call
+]
+lint.flake8-tidy-imports.ban-relative-imports = "all"
+lint.mccabe.max-complexity = 20
