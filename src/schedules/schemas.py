@@ -1,12 +1,14 @@
 from datetime import date
 from pydantic import BaseModel, field_validator, ConfigDict
+from typing import Optional
 
 
 class MedicationScheduleBase(BaseModel):
     medication_name: str
     frequency: int
+    duration_days: Optional[int] = None
+    start_date: Optional[date] = date.today()
     user_id: int
-    duration_days: int | None = None
 
 
 class MedicationScheduleCreate(MedicationScheduleBase):
@@ -25,7 +27,7 @@ class MedicationScheduleCreate(MedicationScheduleBase):
 
 class MedicationSchedule(MedicationScheduleBase):
     id: int
-    start_date: date
+    end_date: Optional[date] = None
 
     # sql alchemy support
     model_config = ConfigDict(from_attributes=True)
