@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script --no-dev
 import uvicorn
 from fastapi import FastAPI
 from schedules.router import router as schedules_router
