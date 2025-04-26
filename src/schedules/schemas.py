@@ -12,6 +12,15 @@ class MedicationScheduleBase(BaseModel):
     user_id: int
 
 
+class MedicationScheduleCreateResponse(BaseModel):
+    schedule_id: int
+
+
+class MedicationScheduleIdsResponse(BaseModel):
+    user_id: int
+    schedules: List[int]
+
+
 class MedicationScheduleCreate(MedicationScheduleBase):
     @field_validator("frequency")
     def check_frequency(cls, value):
@@ -24,10 +33,6 @@ class MedicationScheduleCreate(MedicationScheduleBase):
         if value is not None and value <= 0:
             raise ValueError("duration_days must be greater than 0 or None")
         return value
-
-
-class MedicationScheduleCreateResponse(BaseModel):
-    schedule_id: int
 
 
 class MedicationSchedule(MedicationScheduleBase):
