@@ -17,7 +17,7 @@ async def create_schedule(schedule, db):
 
 async def get_schedules(user_id, db):
 
-    result = await db.execute(
+    db_request = await db.execute(
         select(models.MedicationSchedule)
         .filter(models.MedicationSchedule.user_id == user_id)
         .filter(
@@ -27,6 +27,5 @@ async def get_schedules(user_id, db):
             ),
         ),
     )
-
-    schedules = result.scalars().all()
-    return {"schedules": schedules}
+    db_schedules = db_request.scalars().all()
+    return db_schedules
