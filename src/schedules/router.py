@@ -35,8 +35,10 @@ async def get_user_schedule(
     return schedule
 
 
-@router.get("/next_takings")
-async def get_user_next_takings(user_id: int, db: Annotated[AsyncSession, Depends(database.get_db)]):
+@router.get("/next_takings", response_model=schemas.NextTakingsMedicationsResponse)
+async def get_user_next_takings(
+    user_id: int, db: Annotated[AsyncSession, Depends(database.get_db)]
+) -> schemas.NextTakingsMedicationsResponse:
     db_schedules = await service.get_schedules(user_id, db)
     schedules = [schemas.MedicationSchedule.model_validate(schedule) for schedule in db_schedules]
     next_takings = [
@@ -46,4 +48,4 @@ async def get_user_next_takings(user_id: int, db: Annotated[AsyncSession, Depend
         for next_taking in schedules
         if any(map(utils.is_within_timeframe, next_taking.daily_plan))
     ]
-    return {"user_id": user_id, "next_takings": next_takings}
+    return schemas.NextTakingsMedicationsResponse(user_id=user_id, next_takings=next_takings)

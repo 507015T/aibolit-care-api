@@ -56,3 +56,8 @@ class NextTakingsMedications(BaseModel):
     @field_validator("schedule_times")
     def check_schedule_times(cls, value):
         return list(filter(utils.is_within_timeframe, value))
+
+
+class NextTakingsMedicationsResponse(BaseModel):
+    user_id: int
+    next_takings: List[NextTakingsMedications]
