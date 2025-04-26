@@ -8,13 +8,13 @@ from schedules import schemas, service, utils
 router = APIRouter()
 
 
-@router.post("/schedule", status_code=201)
+@router.post("/schedule", status_code=201, response_model=schemas.MedicationScheduleCreateResponse)
 async def create_schedule(
     schedule: schemas.MedicationScheduleCreate,
     db: Annotated[AsyncSession, Depends(database.get_db)],
-) -> dict[str, int]:
+) -> schemas.MedicationScheduleCreateResponse:
     db_schedule = await service.create_schedule(schedule, db)
-    return {"schedule_id": db_schedule.id}
+    return schemas.MedicationScheduleCreateResponse(schedule_id=db_schedule.id)
 
 
 @router.get("/schedules")

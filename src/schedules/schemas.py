@@ -26,6 +26,10 @@ class MedicationScheduleCreate(MedicationScheduleBase):
         return value
 
 
+class MedicationScheduleCreateResponse(BaseModel):
+    schedule_id: int
+
+
 class MedicationSchedule(MedicationScheduleBase):
     id: int
     end_date: Optional[date] = None
