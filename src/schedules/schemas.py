@@ -1,6 +1,7 @@
 from datetime import date
-from pydantic import BaseModel, field_validator, ConfigDict
-from typing import Optional
+from typing import List, Optional
+from pydantic import BaseModel, computed_field, field_validator, ConfigDict
+from schedules import utils
 
 
 class MedicationScheduleBase(BaseModel):
@@ -28,6 +29,11 @@ class MedicationScheduleCreate(MedicationScheduleBase):
 class MedicationSchedule(MedicationScheduleBase):
     id: int
     end_date: Optional[date] = None
+
+    @computed_field(return_type=List[str])
+    @property
+    def daily_plan(self):
+        return utils.generate_daily_plan(self.frequency)
 
     # sql alchemy support
     model_config = ConfigDict(from_attributes=True)
