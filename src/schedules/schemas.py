@@ -37,3 +37,13 @@ class MedicationSchedule(MedicationScheduleBase):
 
     # sql alchemy support
     model_config = ConfigDict(from_attributes=True)
+
+
+class NextTakingsMedications(BaseModel):
+    schedule_id: int
+    schedule_name: str
+    schedule_times: List[str]
+
+    @field_validator("schedule_times")
+    def check_schedule_times(cls, value):
+        return list(filter(utils.is_within_timeframe, value))
