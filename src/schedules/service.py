@@ -45,3 +45,18 @@ async def get_user_schedule(schedule_id, user_id, db):
             status_code=404, detail=f"The medication '{schedule.medication_name}' intake ended on {schedule.end_date}"
         )
     return schedule
+
+
+async def get_user_next_takings(user_id, db):
+    result = await db.execute(
+        select(models.MedicationSchedule)
+        .filter(models.MedicationSchedule.user_id == user_id)
+        .filter(
+            or_(
+                models.MedicationSchedule.end_date >= date.today(),
+                models.MedicationSchedule.end_date.is_(None),
+            ),
+        ),
+    )
+    schedules = result.scalars().all()
+    return schedules
