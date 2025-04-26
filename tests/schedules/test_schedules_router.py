@@ -2,7 +2,8 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from schedules import models, schemas
 from sqlalchemy import select
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
+from freezegun import freeze_time
 
 
 @pytest.mark.asyncio
@@ -229,7 +230,8 @@ async def test_get_schedules(async_client, get_testing_db: AsyncSession):
     )
     user1_schedules = filtered_schedules.scalars().all()
     expected_data = {
-        "schedules": [schemas.MedicationSchedule.model_validate(obj).model_dump(mode="json") for obj in user1_schedules]
+        "user_id": 1,
+        "schedules": [schemas.MedicationSchedule.model_validate(obj).id for obj in user1_schedules],
     }
     assert expected_data == response.json()
 
@@ -269,11 +271,11 @@ async def test_get_user_schedules(async_client, get_testing_db: AsyncSession):
     )
     user2_schedules = filtered_schedules.scalars().all()
     expected_data = {
-        "schedules": [schemas.MedicationSchedule.model_validate(obj).model_dump(mode="json") for obj in user2_schedules]
+        "user_id": 2,
+        "schedules": [schemas.MedicationSchedule.model_validate(obj).id for obj in user2_schedules],
     }
     assert 200 == response.status_code
     assert expected_data == response.json()
-    assert "Тренболон" == response.json()["schedules"][0]["medication_name"]
 
 
 @pytest.mark.asyncio
@@ -290,7 +292,7 @@ async def test_get_user_schedules_2(async_client, get_testing_db: AsyncSession):
     )
     response = await async_client.get("/schedules", params={"user_id": 1})
     assert 200 == response.status_code
-    expected_data = {"schedules": []}
+    expected_data = {"user_id": 1, "schedules": []}
     assert expected_data == response.json()
 
 
@@ -307,7 +309,176 @@ async def test_get_expired_user_schedules(async_client, get_testing_db: AsyncSes
             "duration_days": 30,
         },
     )
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "ТренболонV0.0.0.0.0.1",
+            "frequency": 100,
+            "user_id": 1,
+            "start_date": "1000-05-04",
+            "duration_days": 1,
+        },
+    )
     response = await async_client.get("/schedules", params={"user_id": 1})
     assert 200 == response.status_code
-    expected_data = {"schedules": []}
+    expected_data = {"schedules": [], "user_id": 1}
+    assert expected_data == response.json()
+
+
+@pytest.mark.asyncio
+async def test_get_expired_schedule_for_user(async_client, get_testing_db: AsyncSession):
+    await async_client.post("/users", json={})
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "Фенибут",
+            "frequency": 3,
+            "user_id": 1,
+            "start_date": "2023-05-04",
+            "duration_days": 31,
+        },
+    )
+    response = await async_client.get("/schedule", params={"schedule_id": 1, "user_id": 1})
+    assert 404 == response.status_code
+    expected_data = {'detail': "The medication 'Фенибут' intake ended on 2023-06-04"}
+    assert expected_data == response.json()
+
+
+@pytest.mark.asyncio
+async def test_get_daily_plan(async_client, get_testing_db: AsyncSession):
+    await async_client.post("/users", json={})
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "Вайбкодинг",
+            "frequency": 3,
+            "user_id": 1,
+        },
+    )
+    response = await async_client.get("/schedule", params={"schedule_id": 1, "user_id": 1})
+    assert 200 == response.status_code
+    expected_data = {
+        "id": 1,
+        "medication_name": "Вайбкодинг",
+        "frequency": 3,
+        "user_id": 1,
+        "daily_plan": ["08:00", "15:00", "22:00"],
+        "duration_days": None,
+        "start_date": datetime.now().strftime("%Y-%m-%d"),
+        "end_date": None,
+    }
+    assert expected_data == response.json()
+
+
+@pytest.mark.asyncio
+async def test_get_daily_plan_without_user_id(async_client, get_testing_db: AsyncSession):
+    await async_client.post("/users", json={})
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "Вайбкодинг",
+            "frequency": 3,
+            "user_id": 1,
+        },
+    )
+    response = await async_client.get("/schedule", params={"schedule_id": 1})
+    assert 422 == response.status_code
+    expected_data = {
+        'detail': [{'input': None, 'loc': ['query', 'user_id'], 'msg': 'Field required', 'type': 'missing'}]
+    }
+
+    assert expected_data == response.json()
+
+
+@pytest.mark.asyncio
+async def test_get_daily_plan_without_schedule_id(async_client, get_testing_db: AsyncSession):
+    await async_client.post("/users", json={})
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "Вайбкодинг",
+            "frequency": 3,
+            "user_id": 1,
+        },
+    )
+    response = await async_client.get("/schedule", params={"user_id": 1})
+    assert 422 == response.status_code
+    expected_data = {
+        'detail': [{'input': None, 'loc': ['query', 'schedule_id'], 'msg': 'Field required', 'type': 'missing'}]
+    }
+
+    assert expected_data == response.json()
+
+
+@pytest.mark.asyncio
+async def test_get_daily_plan_without_params(async_client, get_testing_db: AsyncSession):
+    await async_client.post("/users", json={})
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "Вайбкодинг",
+            "frequency": 3,
+            "user_id": 1,
+        },
+    )
+    response = await async_client.get("/schedule")
+    assert 422 == response.status_code
+    expected_data = {
+        'detail': [
+            {'input': None, 'loc': ['query', 'schedule_id'], 'msg': 'Field required', 'type': 'missing'},
+            {'input': None, 'loc': ['query', 'user_id'], 'msg': 'Field required', 'type': 'missing'},
+        ]
+    }
+    assert expected_data == response.json()
+
+
+@freeze_time("2025-01-01 7:59:59")
+@pytest.mark.asyncio
+async def test_get_next_takings(async_client, get_testing_db: AsyncSession):
+    await async_client.post("/users", json={})
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "Вайбкодинг",
+            "frequency": 3,
+            "user_id": 1,
+        },
+    )
+    await async_client.post(
+        "/schedule",
+        json={"medication_name": "Кокаколаколастик", "frequency": 7, "user_id": 1, "duration_days": 8},
+    )
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "NZT",
+            "frequency": 15,
+            "user_id": 1,
+        },
+    )
+    response = await async_client.get("/next_takings", params={"user_id": 1})
+
+    expected_data = {
+        "user_id": 1,
+        "next_takings": [
+            {
+                "schedule_id": 1,
+                "schedule_name": "Вайбкодинг",
+                "schedule_times": ["08:00"],
+            },
+            {
+                "schedule_id": 2,
+                "schedule_name": "Кокаколаколастик",
+                "schedule_times": ["08:00"],
+            },
+            {
+                "schedule_id": 3,
+                "schedule_name": "NZT",
+                "schedule_times": ["08:00", "09:00"],
+            },
+        ],
+    }
+
+    assert 200 == response.status_code
+    print(expected_data, response.json(), sep="\n")
     assert expected_data == response.json()
