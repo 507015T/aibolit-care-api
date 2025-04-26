@@ -4,7 +4,7 @@ from operator import or_
 from fastapi import HTTPException
 from sqlalchemy import select
 
-from schedules import models, utils
+from schedules import models
 
 
 async def create_schedule(schedule, db):
@@ -39,7 +39,6 @@ async def get_user_schedule(schedule_id, user_id, db):
         .filter(models.MedicationSchedule.user_id == user_id)
     )
     schedule = result.scalars().first()
-    schedule.daily_plan = utils.generate_daily_plan(schedule.frequency)
     if schedule.end_date and schedule.end_date < date.today():
         raise HTTPException(
             status_code=404, detail=f"The medication '{schedule.medication_name}' intake ended on {schedule.end_date}"

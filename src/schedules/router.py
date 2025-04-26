@@ -26,10 +26,13 @@ async def get_all_schedules(
     return schemas.MedicationScheduleIdsResponse(user_id=user_id, schedules=schedules)
 
 
-@router.get("/schedule")
-async def get_user_schedule(schedule_id: int, user_id: int, db: Annotated[AsyncSession, Depends(database.get_db)]):
+@router.get("/schedule", response_model=schemas.MedicationSchedule)
+async def get_user_schedule(
+    schedule_id: int, user_id: int, db: Annotated[AsyncSession, Depends(database.get_db)]
+) -> schemas.MedicationSchedule:
     db_schedule = await service.get_user_schedule(schedule_id, user_id, db)
-    return db_schedule
+    schedule = schemas.MedicationSchedule.model_validate(db_schedule)
+    return schedule
 
 
 @router.get("/next_takings")
