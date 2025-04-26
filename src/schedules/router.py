@@ -12,8 +12,9 @@ router = APIRouter()
 async def create_schedule(
     schedule: schemas.MedicationScheduleCreate,
     db: Annotated[AsyncSession, Depends(database.get_db)],
-):
-    return await service.create_schedule(schedule, db)
+) -> dict[str, int]:
+    db_schedule = await service.create_schedule(schedule, db)
+    return {"schedule_id": db_schedule.id}
 
 
 @router.get("/schedules")

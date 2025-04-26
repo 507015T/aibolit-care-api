@@ -12,7 +12,7 @@ async def create_schedule(schedule, db):
     db.add(db_schedule)
     await db.commit()
     await db.refresh(db_schedule)
-    return {"schedule_id": db_schedule.id}
+    return db_schedule
 
 
 async def get_schedules(user_id, db):
