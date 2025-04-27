@@ -1,45 +1,40 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 from typing import List, Optional
-from pydantic import BaseModel, computed_field, field_validator, ConfigDict
+from pydantic import BaseModel, Field, PositiveInt, computed_field, field_validator, ConfigDict
 from schedules import utils
 
 
 class MedicationScheduleBase(BaseModel):
     medication_name: str
-    frequency: int
-    duration_days: Optional[int] = None
-    start_date: Optional[date] = date.today()
-    user_id: int
+    frequency: PositiveInt = Field(lt=16, examples=[7])
+    duration_days: Optional[PositiveInt] = Field(
+        None, description="Duration in days, must be > 0, if set", examples=[7]
+    )
+    start_date: Optional[date] = Field(default_factory=date.today)
+    user_id: PositiveInt
 
 
 class MedicationScheduleCreateResponse(BaseModel):
-    schedule_id: int
+    schedule_id: PositiveInt
 
 
 class MedicationScheduleIdsResponse(BaseModel):
-    user_id: int
-    schedules: List[int]
+    user_id: PositiveInt
+    schedules: List[PositiveInt]
 
 
-class MedicationScheduleCreate(MedicationScheduleBase):
-    @field_validator("frequency")
-    def check_frequency(cls, value):
-        if not 1 <= value <= 15:
-            raise ValueError("frequency must be between 1 and 15 (inclusive)")
-        return value
-
-    @field_validator("duration_days")
-    def check_duration_days(cls, value):
-        if value is not None and value <= 0:
-            raise ValueError("duration_days must be greater than 0 or None")
-        return value
+class MedicationScheduleCreate(MedicationScheduleBase): ...
 
 
 class MedicationSchedule(MedicationScheduleBase):
-    id: int
-    end_date: Optional[date] = None
+    id: PositiveInt
+    end_date: Optional[date] = Field(None, examples=[(datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d")])
 
-    @computed_field(return_type=List[str])
+    @computed_field(
+        return_type=List[str],
+        description="Each reception time is a multiple of 15!",
+        examples=[['08:00', '10:30', '12:45', '15:00', '17:30', '19:45', '22:00']],
+    )
     @property
     def daily_plan(self):
         return utils.generate_daily_plan(self.frequency)
@@ -49,7 +44,7 @@ class MedicationSchedule(MedicationScheduleBase):
 
 
 class NextTakingsMedications(BaseModel):
-    schedule_id: int
+    schedule_id: PositiveInt
     schedule_name: str
     schedule_times: List[str]
 
@@ -59,5 +54,5 @@ class NextTakingsMedications(BaseModel):
 
 
 class NextTakingsMedicationsResponse(BaseModel):
-    user_id: int
+    user_id: PositiveInt
     next_takings: List[NextTakingsMedications]
