@@ -16,7 +16,7 @@ class MedicationSchedule(Base):
     duration_days: Mapped[Optional[int]] = mapped_column(SmallInteger)
     start_date: Mapped[date] = mapped_column(default=date.today(), nullable=False)
     end_date: Mapped[Optional[date]]
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.policy_number", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     user: Mapped["User"] = relationship("User", back_populates="schedules")
 
