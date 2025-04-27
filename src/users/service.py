@@ -11,6 +11,17 @@ async def create_user(user, db):
     return db_user
 
 
+async def get_user_by_id(user_id, db):
+    filtering = await db.execute(select(models.User).filter(models.User.id == user_id))
+    user = filtering.scalar_one_or_none()
+    return user
+
+
+async def validate_user_exists(user_id, db):
+    user = await get_user_by_id(user_id, db)
+    return user is not None
+
+
 async def get_users(db):
     results = await db.execute(select(models.User))
     users = results.scalars().all()

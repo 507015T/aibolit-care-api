@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing_extensions import Annotated
 
 import database
 from schedules import schemas, service, utils
+from users.service import validate_user_exists
 
 router = APIRouter()
 
@@ -13,6 +14,9 @@ async def create_schedule(
     schedule: schemas.MedicationScheduleCreate,
     db: Annotated[AsyncSession, Depends(database.get_db)],
 ) -> schemas.MedicationScheduleCreateResponse:
+    user_exists = await validate_user_exists(schedule.user_id, db)
+    if not user_exists:
+        raise HTTPException(status_code=404, detail=f"User with id={schedule.user_id} not found")
     db_schedule = await service.create_schedule(schedule, db)
     return schemas.MedicationScheduleCreateResponse(schedule_id=db_schedule.id)
 
