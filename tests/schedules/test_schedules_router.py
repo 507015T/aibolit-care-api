@@ -8,7 +8,8 @@ from freezegun import freeze_time
 
 @pytest.mark.asyncio
 async def test_post_schedule(async_client, get_testing_db: AsyncSession):
-    await async_client.post("/users", json={})
+    user = await async_client.post("/users", json={})
+    assert 201 == user.status_code
     response = await async_client.post(
         "/schedule",
         json={
@@ -45,11 +46,11 @@ async def test_post_schedule_with_wrong_frequency(async_client):
     expected_data = {
         "detail": [
             {
-                "type": "value_error",
+                "type": "less_than",
                 "loc": ["body", "frequency"],
-                "msg": "Value error, frequency must be between 1 and 15 (inclusive)",
+                "msg": "Input should be less than 16",
                 "input": 16,
-                "ctx": {"error": {}},
+                "ctx": {"lt": 16},
             }
         ]
     }
@@ -93,11 +94,11 @@ async def test_post_schedule_with_wrong_duration_days(async_client, get_testing_
     expected_data = {
         "detail": [
             {
-                "type": "value_error",
+                "type": "greater_than",
                 "loc": ["body", "duration_days"],
-                "msg": "Value error, duration_days must be greater than 0 or None",
+                "msg": "Input should be greater than 0",
                 "input": 0,
-                "ctx": {"error": {}},
+                "ctx": {"gt": 0},
             }
         ]
     }
@@ -120,11 +121,11 @@ async def test_post_schedule_with_negative_duration_days(async_client, get_testi
     expected_data = {
         "detail": [
             {
-                "type": "value_error",
+                "type": "greater_than",
                 "loc": ["body", "duration_days"],
-                "msg": "Value error, duration_days must be greater than 0 or None",
+                "msg": "Input should be greater than 0",
                 "input": -13,
-                "ctx": {"error": {}},
+                "ctx": {"gt": 0},
             }
         ]
     }
