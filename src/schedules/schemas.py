@@ -28,14 +28,16 @@ class MedicationScheduleCreate(MedicationScheduleBase): ...
 
 class MedicationSchedule(MedicationScheduleBase):
     id: PositiveInt
-    end_date: Optional[date] = Field(None, examples=[(datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d")])
+    end_date: Optional[date] = Field(
+        None, examples=[(datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d")], json_schema_extra={"readOnly": True}
+    )
 
     @computed_field(
         return_type=List[str],
         description="Each reception time is a multiple of 15!",
         examples=[['08:00', '10:30', '12:45', '15:00', '17:30', '19:45', '22:00']],
+        json_schema_extra={"readOnly": True},
     )
-    @property
     def daily_plan(self):
         return utils.generate_daily_plan(self.frequency)
 
@@ -46,7 +48,7 @@ class MedicationSchedule(MedicationScheduleBase):
 class NextTakingsMedications(BaseModel):
     schedule_id: PositiveInt
     schedule_name: str
-    schedule_times: List[str]
+    schedule_times: List[str] = Field(..., json_schema_extra={"readOnly": True})
 
     @field_validator("schedule_times")
     def check_schedule_times(cls, value):

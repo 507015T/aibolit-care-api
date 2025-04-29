@@ -1,0 +1,340 @@
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    MedicationSchedule:
+      properties:
+        daily_plan:
+          description: Each reception time is a multiple of 15!
+          examples:
+          - - 08:00
+            - '10:30'
+            - '12:45'
+            - '15:00'
+            - '17:30'
+            - '19:45'
+            - '22:00'
+          items:
+            type: string
+          readOnly: true
+          title: Daily Plan
+          type: array
+        duration_days:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: integer
+          - type: 'null'
+          description: Duration in days, must be > 0, if set
+          examples:
+          - 7
+          title: Duration Days
+        end_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          examples:
+          - '2025-05-06'
+          readOnly: true
+          title: End Date
+        frequency:
+          examples:
+          - 7
+          exclusiveMaximum: 16.0
+          exclusiveMinimum: 0.0
+          title: Frequency
+          type: integer
+        id:
+          exclusiveMinimum: 0.0
+          title: Id
+          type: integer
+        medication_name:
+          title: Medication Name
+          type: string
+        start_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Start Date
+        user_id:
+          exclusiveMinimum: 0.0
+          title: User Id
+          type: integer
+      required:
+      - medication_name
+      - frequency
+      - user_id
+      - id
+      - daily_plan
+      title: MedicationSchedule
+      type: object
+    MedicationScheduleCreate:
+      properties:
+        duration_days:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: integer
+          - type: 'null'
+          description: Duration in days, must be > 0, if set
+          examples:
+          - 7
+          title: Duration Days
+        frequency:
+          examples:
+          - 7
+          exclusiveMaximum: 16.0
+          exclusiveMinimum: 0.0
+          title: Frequency
+          type: integer
+        medication_name:
+          title: Medication Name
+          type: string
+        start_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Start Date
+        user_id:
+          exclusiveMinimum: 0.0
+          title: User Id
+          type: integer
+      required:
+      - medication_name
+      - frequency
+      - user_id
+      title: MedicationScheduleCreate
+      type: object
+    MedicationScheduleCreateResponse:
+      properties:
+        schedule_id:
+          exclusiveMinimum: 0.0
+          title: Schedule Id
+          type: integer
+      required:
+      - schedule_id
+      title: MedicationScheduleCreateResponse
+      type: object
+    MedicationScheduleIdsResponse:
+      properties:
+        schedules:
+          items:
+            exclusiveMinimum: 0.0
+            type: integer
+          title: Schedules
+          type: array
+        user_id:
+          exclusiveMinimum: 0.0
+          title: User Id
+          type: integer
+      required:
+      - user_id
+      - schedules
+      title: MedicationScheduleIdsResponse
+      type: object
+    NextTakingsMedications:
+      properties:
+        schedule_id:
+          exclusiveMinimum: 0.0
+          title: Schedule Id
+          type: integer
+        schedule_name:
+          title: Schedule Name
+          type: string
+        schedule_times:
+          items:
+            type: string
+          readOnly: true
+          title: Schedule Times
+          type: array
+      required:
+      - schedule_id
+      - schedule_name
+      - schedule_times
+      title: NextTakingsMedications
+      type: object
+    NextTakingsMedicationsResponse:
+      properties:
+        next_takings:
+          items:
+            $ref: '#/components/schemas/NextTakingsMedications'
+          title: Next Takings
+          type: array
+        user_id:
+          exclusiveMinimum: 0.0
+          title: User Id
+          type: integer
+      required:
+      - user_id
+      - next_takings
+      title: NextTakingsMedicationsResponse
+      type: object
+    UserCreate:
+      properties: {}
+      title: UserCreate
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+info:
+  title: FastAPI
+  version: 0.1.0
+openapi: 3.1.0
+paths:
+  /next_takings:
+    get:
+      operationId: get_user_next_takings_next_takings_get
+      parameters:
+      - in: query
+        name: user_id
+        required: true
+        schema:
+          title: User Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NextTakingsMedicationsResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get User Next Takings
+  /schedule:
+    get:
+      operationId: get_user_schedule_schedule_get
+      parameters:
+      - in: query
+        name: schedule_id
+        required: true
+        schema:
+          title: Schedule Id
+          type: integer
+      - in: query
+        name: user_id
+        required: true
+        schema:
+          title: User Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicationSchedule'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get User Schedule
+    post:
+      operationId: create_schedule_schedule_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MedicationScheduleCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicationScheduleCreateResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Create Schedule
+  /schedules:
+    get:
+      operationId: get_all_schedules_schedules_get
+      parameters:
+      - in: query
+        name: user_id
+        required: true
+        schema:
+          title: User Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicationScheduleIdsResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get All Schedules
+  /users:
+    get:
+      operationId: get_users_users_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Get Users
+    post:
+      operationId: create_user_users_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Create User

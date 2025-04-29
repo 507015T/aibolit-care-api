@@ -1,0 +1,520 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/schedule": {
+      "post": {
+        "summary": "Create Schedule",
+        "operationId": "create_schedule_schedule_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MedicationScheduleCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicationScheduleCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get User Schedule",
+        "operationId": "get_user_schedule_schedule_get",
+        "parameters": [
+          {
+            "name": "schedule_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Schedule Id"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicationSchedule"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schedules": {
+      "get": {
+        "summary": "Get All Schedules",
+        "operationId": "get_all_schedules_schedules_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicationScheduleIdsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/next_takings": {
+      "get": {
+        "summary": "Get User Next Takings",
+        "operationId": "get_user_next_takings_next_takings_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NextTakingsMedicationsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "Get Users",
+        "operationId": "get_users_users_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create User",
+        "operationId": "create_user_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MedicationSchedule": {
+        "properties": {
+          "medication_name": {
+            "type": "string",
+            "title": "Medication Name"
+          },
+          "frequency": {
+            "type": "integer",
+            "exclusiveMaximum": 16.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Frequency",
+            "examples": [
+              7
+            ]
+          },
+          "duration_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Days",
+            "description": "Duration in days, must be > 0, if set",
+            "examples": [
+              7
+            ]
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "user_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "User Id"
+          },
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Id"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date",
+            "readOnly": true,
+            "examples": [
+              "2025-05-06"
+            ]
+          },
+          "daily_plan": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Daily Plan",
+            "description": "Each reception time is a multiple of 15!",
+            "readOnly": true,
+            "examples": [
+              [
+                "08:00",
+                "10:30",
+                "12:45",
+                "15:00",
+                "17:30",
+                "19:45",
+                "22:00"
+              ]
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "medication_name",
+          "frequency",
+          "user_id",
+          "id",
+          "daily_plan"
+        ],
+        "title": "MedicationSchedule"
+      },
+      "MedicationScheduleCreate": {
+        "properties": {
+          "medication_name": {
+            "type": "string",
+            "title": "Medication Name"
+          },
+          "frequency": {
+            "type": "integer",
+            "exclusiveMaximum": 16.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Frequency",
+            "examples": [
+              7
+            ]
+          },
+          "duration_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Days",
+            "description": "Duration in days, must be > 0, if set",
+            "examples": [
+              7
+            ]
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "user_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "User Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "medication_name",
+          "frequency",
+          "user_id"
+        ],
+        "title": "MedicationScheduleCreate"
+      },
+      "MedicationScheduleCreateResponse": {
+        "properties": {
+          "schedule_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Schedule Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "schedule_id"
+        ],
+        "title": "MedicationScheduleCreateResponse"
+      },
+      "MedicationScheduleIdsResponse": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "User Id"
+          },
+          "schedules": {
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0.0
+            },
+            "type": "array",
+            "title": "Schedules"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "schedules"
+        ],
+        "title": "MedicationScheduleIdsResponse"
+      },
+      "NextTakingsMedications": {
+        "properties": {
+          "schedule_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Schedule Id"
+          },
+          "schedule_name": {
+            "type": "string",
+            "title": "Schedule Name"
+          },
+          "schedule_times": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Schedule Times",
+            "readOnly": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "schedule_id",
+          "schedule_name",
+          "schedule_times"
+        ],
+        "title": "NextTakingsMedications"
+      },
+      "NextTakingsMedicationsResponse": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "User Id"
+          },
+          "next_takings": {
+            "items": {
+              "$ref": "#/components/schemas/NextTakingsMedications"
+            },
+            "type": "array",
+            "title": "Next Takings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "next_takings"
+        ],
+        "title": "NextTakingsMedicationsResponse"
+      },
+      "UserCreate": {
+        "properties": {},
+        "type": "object",
+        "title": "UserCreate"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
