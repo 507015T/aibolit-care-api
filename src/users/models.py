@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, relationship
 from database import Base, intpk
 
 
-class User(Base):
+class UserOrm(Base):
     __tablename__ = "users"
     id: Mapped[intpk]
-    schedules: Mapped[list["MedicationSchedule"]] = relationship("MedicationSchedule", back_populates="user")
+    schedules: Mapped[list["MedicationScheduleOrm"]] = relationship("MedicationScheduleOrm", back_populates="user")

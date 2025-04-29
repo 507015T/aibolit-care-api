@@ -23,7 +23,7 @@ async def test_post_schedule(async_client, get_testing_db: AsyncSession):
     expected_data = {"schedule_id": 1}
     assert expected_data == response.json()
 
-    schedules_table = await get_testing_db.execute(select(models.MedicationSchedule))
+    schedules_table = await get_testing_db.execute(select(models.MedicationScheduleOrm))
     created_schedule = schedules_table.scalars().first()
     end_date = schemas.MedicationSchedule.model_validate(created_schedule).model_dump(mode="json")["end_date"]
     correct_end_date = (date.today() + timedelta(days=5)).isoformat()
@@ -72,7 +72,7 @@ async def test_post_schedule_without_duration_days(async_client, get_testing_db:
     expected_data = {"schedule_id": 1}
     assert expected_data == response.json()
 
-    schedules_table = await get_testing_db.execute(select(models.MedicationSchedule))
+    schedules_table = await get_testing_db.execute(select(models.MedicationScheduleOrm))
     created_schedule = schedules_table.scalars().first()
     end_date = schemas.MedicationSchedule.model_validate(created_schedule).model_dump(mode="json")["end_date"]
     assert None is end_date
@@ -148,7 +148,7 @@ async def test_post_schedule_with_none_duration_days(async_client, get_testing_d
     expected_data = {"schedule_id": 1}
     assert expected_data == response.json()
 
-    schedules_table = await get_testing_db.execute(select(models.MedicationSchedule))
+    schedules_table = await get_testing_db.execute(select(models.MedicationScheduleOrm))
     created_schedule = schedules_table.scalars().first()
     duration_days = schemas.MedicationSchedule.model_validate(created_schedule).model_dump(mode="json")["duration_days"]
     assert None is duration_days
@@ -227,7 +227,7 @@ async def test_get_schedules(async_client, get_testing_db: AsyncSession):
     response = await async_client.get("/schedules", params={"user_id": 1})
     assert 200 == response.status_code
     filtered_schedules = await get_testing_db.execute(
-        select(models.MedicationSchedule).filter(models.MedicationSchedule.user_id == 1)
+        select(models.MedicationScheduleOrm).filter(models.MedicationScheduleOrm.user_id == 1)
     )
     user1_schedules = filtered_schedules.scalars().all()
     expected_data = {
@@ -268,7 +268,7 @@ async def test_get_user_schedules(async_client, get_testing_db: AsyncSession):
     )
     response = await async_client.get("/schedules", params={"user_id": 2})
     filtered_schedules = await get_testing_db.execute(
-        select(models.MedicationSchedule).filter(models.MedicationSchedule.user_id == 2)
+        select(models.MedicationScheduleOrm).filter(models.MedicationScheduleOrm.user_id == 2)
     )
     user2_schedules = filtered_schedules.scalars().all()
     expected_data = {
