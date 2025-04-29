@@ -8,7 +8,7 @@ from sqlalchemy.sql.schema import CheckConstraint
 from database import Base, intpk
 
 
-class MedicationSchedule(Base):
+class MedicationScheduleOrm(Base):
     __tablename__ = "schedules"
     id: Mapped[intpk]
     medication_name: Mapped[str] = mapped_column(String(255), index=True, nullable=False)
@@ -18,7 +18,7 @@ class MedicationSchedule(Base):
     end_date: Mapped[Optional[date]]
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
-    user: Mapped["User"] = relationship("User", back_populates="schedules")
+    user: Mapped["UserOrm"] = relationship("UserOrm", back_populates="schedules")
 
     __table_args__ = (
         CheckConstraint("duration_days > 0", name="check_correctness_duration_days"),

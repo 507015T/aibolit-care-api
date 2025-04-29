@@ -9,7 +9,7 @@ from schedules import models
 
 async def create_schedule(schedule, db):
     end_date = schedule.start_date + timedelta(days=schedule.duration_days) if schedule.duration_days else None
-    db_schedule = models.MedicationSchedule(end_date=end_date, **schedule.model_dump())
+    db_schedule = models.MedicationScheduleOrm(end_date=end_date, **schedule.model_dump())
     db.add(db_schedule)
     await db.commit()
     await db.refresh(db_schedule)
@@ -19,12 +19,12 @@ async def create_schedule(schedule, db):
 async def get_schedules(user_id, db):
 
     db_request = await db.execute(
-        select(models.MedicationSchedule)
-        .filter(models.MedicationSchedule.user_id == user_id)
+        select(models.MedicationScheduleOrm)
+        .filter(models.MedicationScheduleOrm.user_id == user_id)
         .filter(
             or_(
-                models.MedicationSchedule.end_date >= date.today(),
-                models.MedicationSchedule.end_date.is_(None),
+                models.MedicationScheduleOrm.end_date >= date.today(),
+                models.MedicationScheduleOrm.end_date.is_(None),
             ),
         ),
     )
@@ -34,9 +34,9 @@ async def get_schedules(user_id, db):
 
 async def get_user_schedule(schedule_id, user_id, db):
     result = await db.execute(
-        select(models.MedicationSchedule)
-        .filter(models.MedicationSchedule.id == schedule_id)
-        .filter(models.MedicationSchedule.user_id == user_id)
+        select(models.MedicationScheduleOrm)
+        .filter(models.MedicationScheduleOrm.id == schedule_id)
+        .filter(models.MedicationScheduleOrm.user_id == user_id)
     )
     schedule = result.scalars().first()
     if schedule.end_date and schedule.end_date < date.today():
@@ -48,12 +48,12 @@ async def get_user_schedule(schedule_id, user_id, db):
 
 async def get_user_next_takings(user_id, db):
     result = await db.execute(
-        select(models.MedicationSchedule)
-        .filter(models.MedicationSchedule.user_id == user_id)
+        select(models.MedicationScheduleOrm)
+        .filter(models.MedicationScheduleOrm.user_id == user_id)
         .filter(
             or_(
-                models.MedicationSchedule.end_date >= date.today(),
-                models.MedicationSchedule.end_date.is_(None),
+                models.MedicationScheduleOrm.end_date >= date.today(),
+                models.MedicationScheduleOrm.end_date.is_(None),
             ),
         ),
     )
