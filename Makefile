@@ -4,3 +4,8 @@ generate-openapi:
 		--input openapi/openapi.json \
 		--output-model-type pydantic_v2.BaseModel \
 		--output openapi/generated/schemas/medication_schedule.py
+
+generate-grpc:
+	uv run python -m grpc_tools.protoc \
+	-I./grpc_server --python_out=./grpc_server \
+	--grpc_python_out=./grpc_server ./grpc_server/medications.proto
