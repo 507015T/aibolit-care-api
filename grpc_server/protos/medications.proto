@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package medication;
+
+import "google/protobuf/timestamp.proto";
+
+service MedicationService {
+  rpc CreateSchedule(CreateScheduleRequest) returns (CreateScheduleResponse);
+  rpc GetAllSchedules(GetAllSchedulesRequest) returns (GetAllSchedulesResponse);
+  rpc GetUserSchedule(GetUserScheduleRequest) returns (MedicationSchedule);
+  rpc GetUserNextTakings(GetUserNextTakingsRequest)
+      returns (GetUserNextTakingsResponse);
+}
+
+message CreateScheduleRequest {
+  string medication_name = 1;
+  int32 frequency = 2;
+  optional int32 duration_days = 3;
+  optional google.protobuf.Timestamp start_date = 4;
+  int32 user_id = 5;
+}
+
+message CreateScheduleResponse { int32 schedule_id = 1; }
+
+message GetAllSchedulesRequest { int32 user_id = 1; }
+
+message GetAllSchedulesResponse {
+  int32 user_id = 1;
+  repeated int32 schedules = 2;
+}
+
+message GetUserScheduleRequest {
+  int32 user_id = 1;
+  int32 schedule_id = 2;
+}
+
+message MedicationSchedule {
+  int32 id = 1;
+  string medication_name = 2;
+  int32 frequency = 3;
+  optional int32 duration_days = 4;
+  optional google.protobuf.Timestamp start_date = 5;
+  optional google.protobuf.Timestamp end_date = 6;
+  int32 user_id = 7;
+  repeated string daily_plan = 8;
+}
+
+message GetUserNextTakingsRequest { int32 user_id = 1; }
+
+message NextTakingsMedications {
+  int32 schedule_id = 1;
+  string schedule_name = 2;
+  repeated string schedule_times = 3;
+}
+
+message GetUserNextTakingsResponse {
+  int32 user_id = 1;
+  repeated NextTakingsMedications next_takings = 2;
+}
