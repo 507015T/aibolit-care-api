@@ -9,3 +9,6 @@ generate-grpc:
 	uv run python -m grpc_tools.protoc \
 	-I ./grpc_server/protos --python_out=./grpc_server \
 	--grpc_python_out=./grpc_server ./grpc_server/protos/medications.proto
+	uv run python -m grpc_tools.protoc \
+	-I ./grpc_server/protos --python_out=./grpc_server \
+	--grpc_python_out=./grpc_server ./grpc_server/protos/users.proto

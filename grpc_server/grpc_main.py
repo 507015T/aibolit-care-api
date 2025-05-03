@@ -2,16 +2,18 @@ import sys
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent / ".."))
+from database import get_db, get_db_ctx
 import grpc
 from src.config import settings
 
-from grpc_server import medications_pb2_grpc
-from grpc_server.grpc_service import MedicationService
+from grpc_server import medications_pb2_grpc, users_pb2_grpc
+from grpc_server.grpc_service import MedicationService, UserService
 
 
 async def serve():
     server = grpc.aio.server()
     medications_pb2_grpc.add_MedicationServiceServicer_to_server(MedicationService(), server)
+    users_pb2_grpc.add_UserServiceServicer_to_server(UserService(), server)
     server.add_insecure_port(f'[::]:{settings.GRPC_PORT}')
     await server.start()
     print(f"gRPC server started on port {settings.GRPC_PORT}")

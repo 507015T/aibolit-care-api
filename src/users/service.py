@@ -25,4 +25,4 @@ async def validate_user_exists(user_id, db):
 async def get_users(db):
     results = await db.execute(select(models.UserOrm))
     users = results.scalars().all()
-    return {"users": users}
+    return users

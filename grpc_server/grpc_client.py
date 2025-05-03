@@ -6,7 +6,7 @@ sys.path.append(str(Path(__file__).resolve().parent / ".."))
 from google.protobuf.timestamp_pb2 import Timestamp
 import grpc
 
-from grpc_server import medications_pb2, medications_pb2_grpc
+from grpc_server import medications_pb2, medications_pb2_grpc, users_pb2, users_pb2_grpc
 
 
 async def run():
@@ -16,6 +16,8 @@ async def run():
         print("2. Get All Schedules")
         print("3. Get User Schedule")
         print("4. Get User Next Takings")
+        print("5. Create User")
+        print("6. Get All Users")
         rpc_call = input("Which rpc would you like to make: ")
 
         if rpc_call == "1":
@@ -42,6 +44,17 @@ async def run():
             request = medications_pb2.GetUserNextTakingsRequest(user_id=1)  # type: ignore
             reply = await stub.GetUserNextTakings(request)
             print("Get User Next Takings Response Received.")
+            print(reply)
+        stub = users_pb2_grpc.UserServiceStub(channel)
+        if rpc_call == "5":
+            request = users_pb2.CreateUserRequest()
+            reply = await stub.CreateUser(request)
+            print("Create User Response Received.")
+            print(reply)
+        if rpc_call == "6":
+            request = users_pb2.GetAllUsersRequest()
+            reply = await stub.GetUsers(request)
+            print("Get All Users Response Received.")
             print(reply)
 
 

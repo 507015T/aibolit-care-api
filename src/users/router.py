@@ -15,4 +15,5 @@ async def create_user(user: schemas.UserCreate, db: Annotated[AsyncSession, Depe
 
 @router.get("/users")
 async def get_users(db: Annotated[AsyncSession, Depends(database.get_db)]):
-    return await service.get_users(db)
+    all_users = await service.get_users(db)
+    return {"users": all_users}
