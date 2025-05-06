@@ -17,7 +17,7 @@ async def serve_rest():
 
 
 async def main():
-    from aibolit.grpc_service.grpc_main import serve as serve_grpc
+    from aibolit.grpc_service.main import serve as serve_grpc
 
     await asyncio.gather(serve_grpc(), serve_rest())
 

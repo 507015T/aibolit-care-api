@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package medication;
+package schedule;
 
 import "google/protobuf/timestamp.proto";
 
-service MedicationService {
+service SchedulesService {
   rpc CreateSchedule(CreateScheduleRequest) returns (CreateScheduleResponse);
   rpc GetAllSchedules(GetAllSchedulesRequest) returns (GetAllSchedulesResponse);
   rpc GetUserSchedule(GetUserScheduleRequest) returns (MedicationSchedule);

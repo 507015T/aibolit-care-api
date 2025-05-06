@@ -3,12 +3,13 @@ generate-openapi:
 	uv run datamodel-codegen \
 		--input openapi/openapi.json \
 		--output-model-type pydantic_v2.BaseModel \
-		--output openapi/generated/schemas/medication_schedule.py
+		--output src/aibolit/openapi/generated/schemas/medication_schedule.py
 generate-grpc:
-	touch grpc_server/__init__.py
 	uv run python -m grpc_tools.protoc \
-	-I ./grpc_server/protos --python_out=./grpc_server \
-	--grpc_python_out=./grpc_server ./grpc_server/protos/medications.proto
+	-I ./src/aibolit/grpc_service/proto --python_out=./src/aibolit/grpc_service/generated/ \
+	--grpc_python_out=./src/aibolit/grpc_service/generated/ \
+	./src/aibolit/grpc_service/proto/schedule.proto
 	uv run python -m grpc_tools.protoc \
-	-I ./grpc_server/protos --python_out=./grpc_server \
-	--grpc_python_out=./grpc_server ./grpc_server/protos/users.proto
+	-I ./src/aibolit/grpc_service/proto --python_out=./src/aibolit/grpc_service/generated/ \
+	--grpc_python_out=./src/aibolit/grpc_service/generated/ \
+	./src/aibolit/grpc_service/proto/user.proto
