@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import List
-from config import settings
+from aibolit.config import settings
 
 
 def generate_daily_plan(frequency) -> List[str]:

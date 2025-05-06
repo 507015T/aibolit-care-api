@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey, SmallInteger, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.schema import CheckConstraint
 
-from database import Base, intpk
+from aibolit.database import Base, intpk
 
 
 class MedicationScheduleOrm(Base):

@@ -1,6 +1,6 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
-from schedules import models, schemas
+from aibolit.schedules import models, schemas
 from sqlalchemy import select
 from datetime import date, datetime, timedelta
 from freezegun import freeze_time

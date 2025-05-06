@@ -1,5 +1,5 @@
 [project]
-name = "doctor-aibolit-fastapi"
+name = "aibolit"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -33,6 +33,10 @@ dev = [
 
 [project.urls]
 Repository = "https://github.com/507015T/medication-schedules-api"
+
+[tool.setuptools]
+packages = ["aibolit"]
+package-dir = {"" = "src"}
 
 [tool.black]
 line-length = 120

@@ -4,7 +4,7 @@ from operator import or_
 from fastapi import HTTPException
 from sqlalchemy import select
 
-from schedules import models
+from aibolit.schedules import models
 
 
 async def create_schedule(schedule, db):

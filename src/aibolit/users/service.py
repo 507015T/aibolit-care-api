@@ -1,6 +1,6 @@
 from sqlalchemy import select
 
-from users import models
+from aibolit.users import models
 
 
 async def create_user(user, db):

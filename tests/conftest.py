@@ -1,14 +1,11 @@
-import sys
-from pathlib import Path
+from contextlib import asynccontextmanager
 import pytest_asyncio
 from httpx import AsyncClient
 from httpx._transports.asgi import ASGITransport
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-src_path = Path(__file__).resolve().parents[1] / "src"
-sys.path.insert(0, str(src_path))
-from database import Base, get_db  # noqa: E402
-from main import app  # noqa: E402
+from aibolit.database import Base, get_db
+from aibolit.main import app
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
@@ -20,6 +17,7 @@ engine = create_async_engine(
 TestingSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
 
 
+@asynccontextmanager
 @pytest_asyncio.fixture(loop_scope="function")
 async def get_testing_db():
     async with engine.begin() as conn:

@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 from typing import List, Optional
 from pydantic import BaseModel, Field, PositiveInt, computed_field, field_validator, ConfigDict
-from schedules import utils
+from aibolit.schedules import utils
 
 
 class MedicationScheduleBase(BaseModel):

@@ -1,8 +1,4 @@
 from datetime import datetime
-import sys
-from pathlib import Path
-
-sys.path.append(str(Path(__file__).resolve().parent / ".."))
 from google.protobuf.timestamp_pb2 import Timestamp
 import grpc
 

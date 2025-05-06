@@ -1,13 +1,7 @@
-import sys
-from pathlib import Path
-
-sys.path.append(str(Path(__file__).resolve().parent / ".."))
-from database import get_db, get_db_ctx
 import grpc
-from src.config import settings
-
-from grpc_server import medications_pb2_grpc, users_pb2_grpc
-from grpc_server.grpc_service import MedicationService, UserService
+from aibolit.config import settings
+from aibolit.grpc_service.generated import medications_pb2_grpc, users_pb2_grpc
+from aibolit.grpc_service.grpc_service import MedicationService, UserService
 
 
 async def serve():

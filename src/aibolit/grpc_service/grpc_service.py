@@ -1,15 +1,15 @@
 from datetime import datetime, time
 from functools import wraps
 import grpc
-from schedules.schemas import MedicationSchedule, MedicationScheduleCreate
-from schedules.service import create_schedule, get_schedules, get_user_schedule
-from schedules.utils import is_within_timeframe
-from grpc_server import users_pb2, users_pb2_grpc
-from src.database import get_db_ctx
-from src.users.service import get_users, validate_user_exists, create_user
-from src.users.schemas import UserCreate
-from . import medications_pb2, medications_pb2_grpc
 from google.protobuf.timestamp_pb2 import Timestamp
+from aibolit.schedules.schemas import MedicationSchedule, MedicationScheduleCreate
+from aibolit.schedules.service import create_schedule, get_schedules, get_user_schedule
+from aibolit.schedules.utils import is_within_timeframe
+from aibolit.grpc_service.generated import users_pb2, users_pb2_grpc
+from aibolit.database import get_db_ctx
+from aibolit.users.service import get_users, validate_user_exists, create_user
+from aibolit.users.schemas import UserCreate
+from aibolit.grpc_service.generated import medications_pb2, medications_pb2_grpc
 
 
 def db_context_manager(func):
