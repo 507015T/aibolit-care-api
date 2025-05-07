@@ -1,8 +1,8 @@
 import grpc
 from aibolit.config import settings
-from aibolit.grpc_service.generated.schedule_pb2_grpc import add_SchedulesServiceServicer_to_server
-from aibolit.grpc_service.generated.user_pb2_grpc import add_UserServiceServicer_to_server
-from aibolit.grpc_service.adapters.grpc_service import ScheduleService, UserService
+from aibolit.transport.grpc.generated.schedule_pb2_grpc import add_SchedulesServiceServicer_to_server
+from aibolit.transport.grpc.generated.user_pb2_grpc import add_UserServiceServicer_to_server
+from aibolit.transport.grpc.adapters.grpc_service import ScheduleService, UserService
 
 
 async def serve():

@@ -2,8 +2,8 @@
 import asyncio
 import uvicorn
 from fastapi import FastAPI
-from aibolit.schedules.router import router as schedules_router
-from aibolit.users.router import router as users_router
+from aibolit.transport.rest.schedules.views import router as schedules_router
+from aibolit.transport.rest.users.views import router as users_router
 
 app = FastAPI()
 app.include_router(schedules_router)
@@ -17,9 +17,9 @@ async def serve_rest():
 
 
 async def main():
-    from aibolit.grpc_service.main import serve as serve_grpc
+    # from aibolit.transport.grpc.main import serve as serve_grpc
 
-    await asyncio.gather(serve_grpc(), serve_rest())
+    await serve_rest()
 
 
 if __name__ == "__main__":
