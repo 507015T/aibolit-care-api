@@ -1,60 +1,34 @@
-#
-# @pytest_asyncio.fixture
-# async def grpc_test_channel(get_testing_db: AsyncSession):
-#     server = grpc.aio.server()
-#     medications_pb2_grpc.add_MedicationServiceServicer_to_server(grpc_main.MedicationService(), server)
-#     # users_pb2_grpc.add_UserServiceServicer_to_server(grpc_main.UserService(db_session=get_testing_db), server)
-#     port = server.add_insecure_port('[::]:0')
-#     await server.start()
-#
-#     channel = grpc.aio.insecure_channel(f"localhost:{port}")
-#     try:
-#         yield channel
-#     finally:
-#         await channel.close()
-#         await server.stop(0)
-#
-#
-# @pytest.mark.asyncio
-# async def test_post_schedule(grpc_test_channel, get_testing_db: AsyncSession):
-#     # user_stub = users_pb2_grpc.UserServiceStub(grpc_test_channel)
-#     # request_user = users_pb2.CreateUserRequest()
-#     # response = await user_stub.CreateUser(request_user)
-#     # print(type(response))
-#     # assert 1 == response.id
-#     stub = medications_pb2_grpc.MedicationServiceStub(grpc_test_channel)
-#     start_date = Timestamp()
-#     start_date.FromDatetime(datetime.now())
-#     request = medications_pb2.CreateScheduleRequest(
-#         user_id=1,
-#         medication_name="Test Medication",
-#         start_date=start_date,
-#         frequency=15,
-#         duration_days=10,
-#     )
-#     response = await stub.CreateSchedule(request)
-#     assert 'lol' == response
+import pytest
+import pytest_asyncio
+import grpc
+from sqlalchemy.ext.asyncio import AsyncSession
+from aibolit.integrations.users_repo import UsersRepo
+from aibolit.services.users_service import UserService
+from aibolit.transport.grpc.generated import user_pb2, user_pb2_grpc
+from aibolit.transport.grpc.adapters.grpc_service import GrpcUserService
 
-# if rpc_call == "1":
-#     request = medications_pb2.CreateScheduleRequest(  # type: ignore
-#         user_id=1, medication_name="Test Medication", start_date=start_date, frequency=15, duration_days=10
-#     )
-#     reply = await stub.CreateSchedule(request)
-#     print("Create Schedule Response Received:")
-#     print(reply)
-# if rpc_call == "2":
-#     request = medications_pb2.GetAllSchedulesRequest(user_id=1)  # type: ignore
-#     reply = await stub.GetAllSchedules(request)
-#     print("Get All Schedules Response Received:")
-#     print(reply)
-# if rpc_call == "3":
-#     request = medications_pb2.GetUserScheduleRequest(user_id=1, schedule_id=2)  # type:ignore
-#     reply = await stub.GetUserSchedule(request)
-#     print("Get User Schedule Response Received.")
-#     print(reply)
-#
-# if rpc_call == "4":
-#     request = medications_pb2.GetUserNextTakingsRequest(user_id=1)  # type: ignore
-#     reply = await stub.GetUserNextTakings(request)
-#     print("Get User Next Takings Response Received.")
-#     print(reply)
+
+@pytest_asyncio.fixture
+async def grpc_test_channel(get_testing_db: AsyncSession):
+    users_repo = UsersRepo(get_testing_db)
+    user_service = UserService(users_repo)
+
+    server = grpc.aio.server()
+    user_pb2_grpc.add_UserServiceServicer_to_server(GrpcUserService(user_service), server)
+    port = server.add_insecure_port('[::]:0')
+    await server.start()
+
+    channel = grpc.aio.insecure_channel(f"localhost:{port}")
+    try:
+        yield channel
+    finally:
+        await channel.close()
+        await server.stop(0)
+
+
+@pytest.mark.asyncio
+async def test_post_schedule(grpc_test_channel):
+    stub = user_pb2_grpc.UserServiceStub(grpc_test_channel)
+    request = user_pb2.CreateUserRequest()
+    reply = await stub.CreateUser(request)
+    assert 1 == reply.id

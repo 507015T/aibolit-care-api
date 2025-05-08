@@ -1,18 +1,16 @@
-from typing import Annotated, Optional
+from typing import Optional
 
-from fastapi import Depends
 
-from aibolit.dependencies import get_users_repo
 from aibolit.integrations.users_repo import UsersRepo
-from aibolit.transport.rest.users.schemas import AllUsers, User
+from aibolit.transport.rest.users.schemas import AllUsers, User, UserCreateRequest
 
 
 # TODO: ЗДЕСЬ ЗАКОНЧИЛ list_users низя возвращать модель это нарушает че то там
 class UserService:
-    def __init__(self, users_repo: Annotated[UsersRepo, Depends(get_users_repo)]) -> None:
+    def __init__(self, users_repo: UsersRepo) -> None:
         self._users_repo = users_repo
 
-    async def create_user(self, user: User) -> int:
+    async def create_user(self, user: UserCreateRequest) -> int:
         db_user = await self._users_repo.create_user(user)
         return db_user.id
 

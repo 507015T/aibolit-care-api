@@ -2,7 +2,7 @@ from datetime import datetime
 from google.protobuf.timestamp_pb2 import Timestamp
 import grpc
 
-from aibolit.grpc_service.generated import schedule_pb2, schedule_pb2_grpc, user_pb2, user_pb2_grpc
+from aibolit.transport.grpc.generated import schedule_pb2, schedule_pb2_grpc, user_pb2, user_pb2_grpc
 
 
 async def run():

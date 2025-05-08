@@ -1,4 +1,3 @@
-from contextlib import asynccontextmanager
 import pytest_asyncio
 from httpx import AsyncClient
 from httpx._transports.asgi import ASGITransport
@@ -17,7 +16,6 @@ engine = create_async_engine(
 TestingSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
 
 
-@asynccontextmanager
 @pytest_asyncio.fixture(loop_scope="function")
 async def get_testing_db():
     async with engine.begin() as conn:
