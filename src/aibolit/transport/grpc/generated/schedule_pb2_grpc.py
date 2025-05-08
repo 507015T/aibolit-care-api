@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import schedule_pb2 as schedule__pb2
+from aibolit.transport.grpc.generated import schedule_pb2 as aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2
 
 GRPC_GENERATED_VERSION = '1.71.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in schedule_pb2_grpc.py depends on'
+        + f' but the generated code in aibolit/transport/grpc/generated/schedule_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,23 +36,23 @@ class SchedulesServiceStub(object):
         """
         self.CreateSchedule = channel.unary_unary(
                 '/schedule.SchedulesService/CreateSchedule',
-                request_serializer=schedule__pb2.CreateScheduleRequest.SerializeToString,
-                response_deserializer=schedule__pb2.CreateScheduleResponse.FromString,
+                request_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.CreateScheduleRequest.SerializeToString,
+                response_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.CreateScheduleResponse.FromString,
                 _registered_method=True)
         self.GetAllSchedules = channel.unary_unary(
                 '/schedule.SchedulesService/GetAllSchedules',
-                request_serializer=schedule__pb2.GetAllSchedulesRequest.SerializeToString,
-                response_deserializer=schedule__pb2.GetAllSchedulesResponse.FromString,
+                request_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetAllSchedulesRequest.SerializeToString,
+                response_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetAllSchedulesResponse.FromString,
                 _registered_method=True)
         self.GetUserSchedule = channel.unary_unary(
                 '/schedule.SchedulesService/GetUserSchedule',
-                request_serializer=schedule__pb2.GetUserScheduleRequest.SerializeToString,
-                response_deserializer=schedule__pb2.MedicationSchedule.FromString,
+                request_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetUserScheduleRequest.SerializeToString,
+                response_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.MedicationSchedule.FromString,
                 _registered_method=True)
         self.GetUserNextTakings = channel.unary_unary(
                 '/schedule.SchedulesService/GetUserNextTakings',
-                request_serializer=schedule__pb2.GetUserNextTakingsRequest.SerializeToString,
-                response_deserializer=schedule__pb2.GetUserNextTakingsResponse.FromString,
+                request_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetUserNextTakingsRequest.SerializeToString,
+                response_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetUserNextTakingsResponse.FromString,
                 _registered_method=True)
 
 
@@ -88,23 +88,23 @@ def add_SchedulesServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'CreateSchedule': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateSchedule,
-                    request_deserializer=schedule__pb2.CreateScheduleRequest.FromString,
-                    response_serializer=schedule__pb2.CreateScheduleResponse.SerializeToString,
+                    request_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.CreateScheduleRequest.FromString,
+                    response_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.CreateScheduleResponse.SerializeToString,
             ),
             'GetAllSchedules': grpc.unary_unary_rpc_method_handler(
                     servicer.GetAllSchedules,
-                    request_deserializer=schedule__pb2.GetAllSchedulesRequest.FromString,
-                    response_serializer=schedule__pb2.GetAllSchedulesResponse.SerializeToString,
+                    request_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetAllSchedulesRequest.FromString,
+                    response_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetAllSchedulesResponse.SerializeToString,
             ),
             'GetUserSchedule': grpc.unary_unary_rpc_method_handler(
                     servicer.GetUserSchedule,
-                    request_deserializer=schedule__pb2.GetUserScheduleRequest.FromString,
-                    response_serializer=schedule__pb2.MedicationSchedule.SerializeToString,
+                    request_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetUserScheduleRequest.FromString,
+                    response_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.MedicationSchedule.SerializeToString,
             ),
             'GetUserNextTakings': grpc.unary_unary_rpc_method_handler(
                     servicer.GetUserNextTakings,
-                    request_deserializer=schedule__pb2.GetUserNextTakingsRequest.FromString,
-                    response_serializer=schedule__pb2.GetUserNextTakingsResponse.SerializeToString,
+                    request_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetUserNextTakingsRequest.FromString,
+                    response_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetUserNextTakingsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -132,8 +132,8 @@ class SchedulesService(object):
             request,
             target,
             '/schedule.SchedulesService/CreateSchedule',
-            schedule__pb2.CreateScheduleRequest.SerializeToString,
-            schedule__pb2.CreateScheduleResponse.FromString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.CreateScheduleRequest.SerializeToString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.CreateScheduleResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -159,8 +159,8 @@ class SchedulesService(object):
             request,
             target,
             '/schedule.SchedulesService/GetAllSchedules',
-            schedule__pb2.GetAllSchedulesRequest.SerializeToString,
-            schedule__pb2.GetAllSchedulesResponse.FromString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetAllSchedulesRequest.SerializeToString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetAllSchedulesResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -186,8 +186,8 @@ class SchedulesService(object):
             request,
             target,
             '/schedule.SchedulesService/GetUserSchedule',
-            schedule__pb2.GetUserScheduleRequest.SerializeToString,
-            schedule__pb2.MedicationSchedule.FromString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetUserScheduleRequest.SerializeToString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.MedicationSchedule.FromString,
             options,
             channel_credentials,
             insecure,
@@ -213,8 +213,8 @@ class SchedulesService(object):
             request,
             target,
             '/schedule.SchedulesService/GetUserNextTakings',
-            schedule__pb2.GetUserNextTakingsRequest.SerializeToString,
-            schedule__pb2.GetUserNextTakingsResponse.FromString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetUserNextTakingsRequest.SerializeToString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_schedule__pb2.GetUserNextTakingsResponse.FromString,
             options,
             channel_credentials,
             insecure,

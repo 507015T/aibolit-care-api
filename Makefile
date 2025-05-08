@@ -6,10 +6,10 @@ generate-openapi:
 		--output src/aibolit/openapi/generated/schemas/medication_schedule.py
 generate-grpc:
 	uv run python -m grpc_tools.protoc \
-	-I ./src/aibolit/grpc_service/proto --python_out=./src/aibolit/grpc_service/generated/ \
-	--grpc_python_out=./src/aibolit/grpc_service/generated/ \
-	./src/aibolit/grpc_service/proto/schedule.proto
+		-Iaibolit/transport/grpc/generated=src/aibolit/transport/grpc/protos \
+		--python_out=src --grpc_python_out=src \
+		src/aibolit/transport/grpc/protos/schedule.proto
 	uv run python -m grpc_tools.protoc \
-	-I ./src/aibolit/grpc_service/proto --python_out=./src/aibolit/grpc_service/generated/ \
-	--grpc_python_out=./src/aibolit/grpc_service/generated/ \
-	./src/aibolit/grpc_service/proto/user.proto
+		-Iaibolit/transport/grpc/generated=src/aibolit/transport/grpc/protos \
+		--python_out=src --grpc_python_out=src \
+		src/aibolit/transport/grpc/protos/user.proto

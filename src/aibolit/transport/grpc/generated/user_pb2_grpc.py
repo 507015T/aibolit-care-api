@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import user_pb2 as user__pb2
+from aibolit.transport.grpc.generated import user_pb2 as aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2
 
 GRPC_GENERATED_VERSION = '1.71.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in user_pb2_grpc.py depends on'
+        + f' but the generated code in aibolit/transport/grpc/generated/user_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,13 +36,13 @@ class UserServiceStub(object):
         """
         self.CreateUser = channel.unary_unary(
                 '/user.UserService/CreateUser',
-                request_serializer=user__pb2.CreateUserRequest.SerializeToString,
-                response_deserializer=user__pb2.CreateUserResponse.FromString,
+                request_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.CreateUserRequest.SerializeToString,
+                response_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.CreateUserResponse.FromString,
                 _registered_method=True)
         self.GetUsers = channel.unary_unary(
                 '/user.UserService/GetUsers',
-                request_serializer=user__pb2.GetAllUsersRequest.SerializeToString,
-                response_deserializer=user__pb2.GetAllUsersResponse.FromString,
+                request_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.GetAllUsersRequest.SerializeToString,
+                response_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.GetAllUsersResponse.FromString,
                 _registered_method=True)
 
 
@@ -66,13 +66,13 @@ def add_UserServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'CreateUser': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateUser,
-                    request_deserializer=user__pb2.CreateUserRequest.FromString,
-                    response_serializer=user__pb2.CreateUserResponse.SerializeToString,
+                    request_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.CreateUserRequest.FromString,
+                    response_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.CreateUserResponse.SerializeToString,
             ),
             'GetUsers': grpc.unary_unary_rpc_method_handler(
                     servicer.GetUsers,
-                    request_deserializer=user__pb2.GetAllUsersRequest.FromString,
-                    response_serializer=user__pb2.GetAllUsersResponse.SerializeToString,
+                    request_deserializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.GetAllUsersRequest.FromString,
+                    response_serializer=aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.GetAllUsersResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -100,8 +100,8 @@ class UserService(object):
             request,
             target,
             '/user.UserService/CreateUser',
-            user__pb2.CreateUserRequest.SerializeToString,
-            user__pb2.CreateUserResponse.FromString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.CreateUserRequest.SerializeToString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.CreateUserResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -127,8 +127,8 @@ class UserService(object):
             request,
             target,
             '/user.UserService/GetUsers',
-            user__pb2.GetAllUsersRequest.SerializeToString,
-            user__pb2.GetAllUsersResponse.FromString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.GetAllUsersRequest.SerializeToString,
+            aibolit_dot_transport_dot_grpc_dot_generated_dot_user__pb2.GetAllUsersResponse.FromString,
             options,
             channel_credentials,
             insecure,
