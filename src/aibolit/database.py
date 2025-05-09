@@ -17,9 +17,8 @@ SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush
 class Base(DeclarativeBase): ...
 
 
-# for grpc
 @asynccontextmanager
-async def get_db_ctx():
+async def get_db_grpc():
     db = SessionLocal()
     try:
         yield db
@@ -28,7 +27,7 @@ async def get_db_ctx():
 
 
 async def get_db():
-    async with get_db_ctx() as db:
+    async with get_db_grpc() as db:
         yield db
 
 
