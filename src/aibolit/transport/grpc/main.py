@@ -2,32 +2,26 @@ from concurrent import futures
 import grpc
 from aibolit.config import settings
 from aibolit.database import get_db_grpc
+from aibolit.integrations.schedules_repo import SchedulesRepo
 from aibolit.integrations.users_repo import UsersRepo
+from aibolit.services.schedules_service import ScheduleService
 from aibolit.services.users_service import UserService
+from aibolit.transport.grpc.adapters.schedules_service import GrpcScheduleService
+from aibolit.transport.grpc.generated.schedule_pb2_grpc import add_SchedulesServiceServicer_to_server
 from aibolit.transport.grpc.generated.user_pb2_grpc import add_UserServiceServicer_to_server
-from aibolit.transport.grpc.adapters.grpc_service import GrpcUserService
+from aibolit.transport.grpc.adapters.users_service import GrpcUserService
 
 
 async def serve():
     server = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
 
-    # schedules_repo = SchedulesRepo(get_schedules_repo(session))
-    # users_repo = UsersRepo(get_users_repo(session))
-    #
-    # schedules_service = ScheduleService(schedules_repo=schedules_repo)
-    # users_service = UserService(users_repo=users_repo)
-    #
-    # grpc_service = GrpcScheduleService(
-    #     schedules_service=schedules_service,
-    #     users_service=users_service,
-    # )
-    # add_SchedulesServiceServicer_to_server(grpc_service, server)
-
     async with get_db_grpc() as session:
-        users_repo = UsersRepo(session)
-        user_service = UserService(users_repo)
+        users_repo, schedules_repo = UsersRepo(session), SchedulesRepo(session)
+        users_service, schedules_service = UserService(users_repo), ScheduleService(schedules_repo)
 
-        add_UserServiceServicer_to_server(GrpcUserService(user_service=user_service), server)
+        server = grpc.aio.server()
+        add_UserServiceServicer_to_server(GrpcUserService(users_service), server)
+        add_SchedulesServiceServicer_to_server(GrpcScheduleService(schedules_service, users_service), server)
 
         server.add_insecure_port(f'[::]:{settings.GRPC_PORT}')
         await server.start()
