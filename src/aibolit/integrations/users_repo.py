@@ -22,11 +22,6 @@ class UsersRepo:
         user = filtering.scalar_one_or_none()
         return user
 
-    # TODO: нах он нужен??
-    # async def validate_user_exists(self, user_id: int) -> bool:
-    #     user = await self.get_user_by_id(user_id)
-    #     return user is not None
-
     async def get_users(self) -> Sequence[UserOrm]:
         results = await self._db.execute(select(UserOrm))
         users = results.scalars().all()

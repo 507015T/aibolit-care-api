@@ -5,7 +5,6 @@ from aibolit.integrations.users_repo import UsersRepo
 from aibolit.transport.rest.users.schemas import AllUsers, User, UserCreateRequest
 
 
-# TODO: ЗДЕСЬ ЗАКОНЧИЛ list_users низя возвращать модель это нарушает че то там
 class UserService:
     def __init__(self, users_repo: UsersRepo) -> None:
         self._users_repo = users_repo

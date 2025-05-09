@@ -43,12 +43,6 @@ class SchedulesRepo:
             .filter(MedicationScheduleOrm.user_id == user_id)
         )
         schedule = result.scalars().first()
-        # # TODO: ВЫНЕСТИ ЭТО НАХУЙ ОТСЮДА И ПОМЕСТИТЬ В SERVICES
-        # if schedule.end_date and schedule.end_date < date.today():
-        #     raise HTTPException(
-        #         status_code=404,
-        #         detail=f"The medication '{schedule.medication_name}' intake ended on {schedule.end_date}",
-        #     )
         return schedule
 
     async def get_user_next_takings(self, user_id: int) -> Optional[Sequence[MedicationScheduleOrm]]:

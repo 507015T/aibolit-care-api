@@ -3,11 +3,11 @@ import asyncio
 import uvicorn
 from fastapi import FastAPI
 
-# from aibolit.transport.rest.schedules.views import router as schedules_router
+from aibolit.transport.rest.schedules.views import router as schedules_router
 from aibolit.transport.rest.users.views import router as users_router
 
 app = FastAPI()
-# app.include_router(schedules_router)
+app.include_router(schedules_router)
 app.include_router(users_router)
 
 
