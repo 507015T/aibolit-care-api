@@ -1,22 +1,22 @@
 from concurrent import futures
 import grpc
-from aibolit.config import settings
-from aibolit.database import get_db_grpc
-from aibolit.integrations.schedules_repo import SchedulesRepo
-from aibolit.integrations.users_repo import UsersRepo
-from aibolit.services.schedules_service import ScheduleService
-from aibolit.services.users_service import UserService
-from aibolit.transport.grpc.adapters.schedules_service import GrpcScheduleService
+from aibolit.core.config import settings
+from aibolit.core.database import get_db_grpc
+from aibolit.repositories.schedules.repository import ScheduleRepo
+from aibolit.repositories.users.repository import UserRepo
+from aibolit.services.schedules.service import ScheduleService
+from aibolit.services.users.service import UserService
+from aibolit.transport.grpc.adapters.schedules.service import GrpcScheduleService
 from aibolit.transport.grpc.generated.schedule_pb2_grpc import add_SchedulesServiceServicer_to_server
 from aibolit.transport.grpc.generated.user_pb2_grpc import add_UserServiceServicer_to_server
-from aibolit.transport.grpc.adapters.users_service import GrpcUserService
+from aibolit.transport.grpc.adapters.users.service import GrpcUserService
 
 
 async def serve():
     server = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
 
     async with get_db_grpc() as session:
-        users_repo, schedules_repo = UsersRepo(session), SchedulesRepo(session)
+        users_repo, schedules_repo = UserRepo(session), ScheduleRepo(session)
         users_service, schedules_service = UserService(users_repo), ScheduleService(schedules_repo)
 
         server = grpc.aio.server()

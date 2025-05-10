@@ -1,5 +1,16 @@
 components:
   schemas:
+    AllUsers:
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/User'
+          title: Users
+          type: array
+      required:
+      - users
+      title: AllUsers
+      type: object
     HTTPValidationError:
       properties:
         detail:
@@ -41,7 +52,7 @@ components:
             type: string
           - type: 'null'
           examples:
-          - '2025-05-06'
+          - '2026-01-06'
           readOnly: true
           title: End Date
         frequency:
@@ -63,6 +74,9 @@ components:
           - format: date
             type: string
           - type: 'null'
+          description: today date by default
+          examples:
+          - '2025-12-31'
           title: Start Date
         user_id:
           exclusiveMinimum: 0.0
@@ -76,7 +90,7 @@ components:
       - daily_plan
       title: MedicationSchedule
       type: object
-    MedicationScheduleCreate:
+    MedicationScheduleCreateRequest:
       properties:
         duration_days:
           anyOf:
@@ -102,6 +116,9 @@ components:
           - format: date
             type: string
           - type: 'null'
+          description: today date by default
+          examples:
+          - '2025-12-31'
           title: Start Date
         user_id:
           exclusiveMinimum: 0.0
@@ -111,7 +128,7 @@ components:
       - medication_name
       - frequency
       - user_id
-      title: MedicationScheduleCreate
+      title: MedicationScheduleCreateRequest
       type: object
     MedicationScheduleCreateResponse:
       properties:
@@ -177,9 +194,29 @@ components:
       - next_takings
       title: NextTakingsMedicationsResponse
       type: object
-    UserCreate:
+    User:
+      properties:
+        id:
+          exclusiveMinimum: 0.0
+          title: Id
+          type: integer
+      required:
+      - id
+      title: User
+      type: object
+    UserCreateRequest:
       properties: {}
-      title: UserCreate
+      title: UserCreateRequest
+      type: object
+    UserCreateResponse:
+      properties:
+        id:
+          exclusiveMinimum: 0.0
+          title: Id
+          type: integer
+      required:
+      - id
+      title: UserCreateResponse
       type: object
     ValidationError:
       properties:
@@ -267,7 +304,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MedicationScheduleCreate'
+              $ref: '#/components/schemas/MedicationScheduleCreateRequest'
         required: true
       responses:
         '201':
@@ -314,7 +351,8 @@ paths:
         '200':
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/AllUsers'
           description: Successful Response
       summary: Get Users
     post:
@@ -323,13 +361,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserCreate'
+              $ref: '#/components/schemas/UserCreateRequest'
         required: true
       responses:
         '201':
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/UserCreateResponse'
           description: Successful Response
         '422':
           content:

@@ -2,11 +2,11 @@ from typing import Optional, Sequence
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from aibolit.models.user import UserOrm
-from aibolit.transport.rest.users.schemas import UserCreateRequest
+from aibolit.models.users.models import UserOrm
+from aibolit.schemas.users.schemas import UserCreateRequest
 
 
-class UsersRepo:
+class UserRepo:
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 

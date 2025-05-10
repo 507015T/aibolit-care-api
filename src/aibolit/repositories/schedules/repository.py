@@ -5,15 +5,16 @@ from typing import Optional, Sequence
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from aibolit.models.schedule import MedicationScheduleOrm
-from aibolit.transport.rest.schedules.schemas import MedicationScheduleCreateRequest
+from aibolit.models.schedules.models import MedicationScheduleOrm
+from aibolit.schemas.schedules.schemas import MedicationScheduleCreateRequest
 
 
-class SchedulesRepo:
+class ScheduleRepo:
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 
     async def create_schedule(self, schedule: MedicationScheduleCreateRequest) -> MedicationScheduleOrm:
+        schedule.start_date = date.today() if not schedule.start_date else schedule.start_date
         end_date = schedule.start_date + timedelta(days=schedule.duration_days) if schedule.duration_days else None
         db_schedule = MedicationScheduleOrm(end_date=end_date, **schedule.model_dump())
         self._db.add(db_schedule)

@@ -3,7 +3,7 @@ from typing import List
 
 from sqlalchemy.orm import Mapped, relationship
 
-from aibolit.database import Base, intpk
+from aibolit.core.database import Base, intpk
 
 
 class UserOrm(Base):

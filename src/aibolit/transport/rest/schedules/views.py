@@ -4,17 +4,18 @@ from typing_extensions import Annotated
 
 # from aibolit.schedules import utils, service
 
-# from openapi.generated.schemas.medication_schedule import (
-from aibolit.dependencies import get_user_service, get_schedule_service
-from aibolit.services.users_service import UserService
-from aibolit.transport.rest.schedules.schemas import (
+from aibolit.core.dependencies import get_user_service, get_schedule_service
+from aibolit.services.users.service import UserService
+
+# from aibolit.schemas.schedules.schemas import (
+from aibolit.schemas.openapi_generated.schemas import (
     MedicationScheduleCreateResponse,
     MedicationScheduleCreateRequest,
     MedicationScheduleIdsResponse,
     MedicationSchedule,
     NextTakingsMedicationsResponse,
 )
-from aibolit.services.schedules_service import ScheduleExpiredError, ScheduleService
+from aibolit.services.schedules.service import ScheduleExpiredError, ScheduleNotFound, ScheduleService
 
 router = APIRouter()
 
@@ -29,6 +30,7 @@ async def create_schedule(
     if not user_exists:
         raise HTTPException(status_code=404, detail=f"User with id={schedule.user_id} not found")
     schedule = await schedule_service.create_schedule(schedule)
+    print('ok')
     return schedule
 
 
@@ -49,7 +51,7 @@ async def get_user_schedule(
     try:
         user_schedule = await schedule_service.get_user_schedule(user_id=user_id, schedule_id=schedule_id)
         return user_schedule
-    except ScheduleExpiredError as e:
+    except (ScheduleExpiredError, ScheduleNotFound) as e:
         raise HTTPException(status_code=404, detail=str(e))
 
 

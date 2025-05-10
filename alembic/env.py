@@ -19,16 +19,16 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from aibolit.database import Base
-from aibolit.models.user import UserOrm
-from aibolit.models.schedule import MedicationScheduleOrm
+from aibolit.core.database import Base
+from aibolit.models.users.models import UserOrm
+from aibolit.models.schedules.models import MedicationScheduleOrm
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-from aibolit.config import settings
+from aibolit.core.config import settings
 config.set_main_option("sqlalchemy.url", settings.DB_URL)
 
 

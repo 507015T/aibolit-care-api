@@ -3,9 +3,9 @@ from google.protobuf.timestamp_pb2 import Timestamp
 import grpc
 from aibolit.transport.grpc.generated.schedule_pb2_grpc import SchedulesServiceServicer
 from aibolit.transport.grpc.generated import schedule_pb2
-from aibolit.services.users_service import UserService
-from aibolit.services.schedules_service import ScheduleService
-from aibolit.transport.rest.schedules.schemas import MedicationScheduleCreateRequest, MedicationSchedule
+from aibolit.services.users.service import UserService
+from aibolit.services.schedules.service import ScheduleService
+from aibolit.schemas.schedules.schemas import MedicationScheduleCreateRequest, MedicationSchedule
 
 
 class GrpcScheduleService(SchedulesServiceServicer):

@@ -1,9 +1,10 @@
 generate-openapi:
-	mkdir -p openapi/generated/schemas
+	mkdir -p src/aibolit/schemas/openapi_generated; touch src/aibolit/schemas/openapi_generated/__init__.py
 	uv run datamodel-codegen \
-		--input openapi/openapi.json \
+		--input docs/scripts/openapi.json \
+		--input-file-type openapi \
 		--output-model-type pydantic_v2.BaseModel \
-		--output src/aibolit/openapi/generated/schemas/medication_schedule.py
+		--output src/aibolit/schemas/openapi_generated/schemas.py
 generate-grpc:
 	uv run python -m grpc_tools.protoc \
 		-Iaibolit/transport/grpc/generated=src/aibolit/transport/grpc/protos \

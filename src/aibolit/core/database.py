@@ -4,7 +4,7 @@ from typing import Annotated
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, mapped_column
 
-from aibolit.config import settings
+from aibolit.core.config import settings
 
 engine = create_async_engine(
     url=settings.DB_URL,

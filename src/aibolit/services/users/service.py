@@ -1,12 +1,12 @@
 from typing import Optional
 
 
-from aibolit.integrations.users_repo import UsersRepo
-from aibolit.transport.rest.users.schemas import AllUsers, User, UserCreateRequest
+from aibolit.repositories.users.repository import UserRepo
+from aibolit.schemas.users.schemas import AllUsers, User, UserCreateRequest
 
 
 class UserService:
-    def __init__(self, users_repo: UsersRepo) -> None:
+    def __init__(self, users_repo: UserRepo) -> None:
         self._users_repo = users_repo
 
     async def create_user(self, user: UserCreateRequest) -> int:

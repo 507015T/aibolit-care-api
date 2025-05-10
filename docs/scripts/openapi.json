@@ -14,7 +14,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MedicationScheduleCreate"
+                "$ref": "#/components/schemas/MedicationScheduleCreateRequest"
               }
             }
           }
@@ -176,7 +176,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/AllUsers"
+                }
               }
             }
           }
@@ -189,7 +191,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserCreate"
+                "$ref": "#/components/schemas/UserCreateRequest"
               }
             }
           },
@@ -200,7 +202,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/UserCreateResponse"
+                }
               }
             }
           },
@@ -220,6 +224,22 @@
   },
   "components": {
     "schemas": {
+      "AllUsers": {
+        "properties": {
+          "users": {
+            "items": {
+              "$ref": "#/components/schemas/User"
+            },
+            "type": "array",
+            "title": "Users"
+          }
+        },
+        "type": "object",
+        "required": [
+          "users"
+        ],
+        "title": "AllUsers"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -274,7 +294,11 @@
                 "type": "null"
               }
             ],
-            "title": "Start Date"
+            "title": "Start Date",
+            "description": "today date by default",
+            "examples": [
+              "2025-12-31"
+            ]
           },
           "user_id": {
             "type": "integer",
@@ -299,7 +323,7 @@
             "title": "End Date",
             "readOnly": true,
             "examples": [
-              "2025-05-06"
+              "2026-01-06"
             ]
           },
           "daily_plan": {
@@ -333,7 +357,7 @@
         ],
         "title": "MedicationSchedule"
       },
-      "MedicationScheduleCreate": {
+      "MedicationScheduleCreateRequest": {
         "properties": {
           "medication_name": {
             "type": "string",
@@ -374,7 +398,11 @@
                 "type": "null"
               }
             ],
-            "title": "Start Date"
+            "title": "Start Date",
+            "description": "today date by default",
+            "examples": [
+              "2025-12-31"
+            ]
           },
           "user_id": {
             "type": "integer",
@@ -388,7 +416,7 @@
           "frequency",
           "user_id"
         ],
-        "title": "MedicationScheduleCreate"
+        "title": "MedicationScheduleCreateRequest"
       },
       "MedicationScheduleCreateResponse": {
         "properties": {
@@ -477,10 +505,38 @@
         ],
         "title": "NextTakingsMedicationsResponse"
       },
-      "UserCreate": {
+      "User": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "User"
+      },
+      "UserCreateRequest": {
         "properties": {},
         "type": "object",
-        "title": "UserCreate"
+        "title": "UserCreateRequest"
+      },
+      "UserCreateResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "UserCreateResponse"
       },
       "ValidationError": {
         "properties": {

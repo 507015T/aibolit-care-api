@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from typing_extensions import Annotated
 
-from aibolit.dependencies import get_user_service
-from aibolit.services.users_service import UserService
-from aibolit.transport.rest.users.schemas import AllUsers, UserCreateRequest, UserCreateResponse
+from aibolit.core.dependencies import get_user_service
+from aibolit.services.users.service import UserService
+from aibolit.schemas.openapi_generated.schemas import AllUsers, UserCreateRequest, UserCreateResponse
 
 router = APIRouter()
 

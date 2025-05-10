@@ -12,13 +12,13 @@ app.include_router(users_router)
 
 
 async def serve_rest():
-    config = uvicorn.Config("main:app", host="localhost", port=8000, reload=True)
+    config = uvicorn.Config("main:app", host="localhost", port=8000, reload=True, reload_includes=['*.py'])
     server = uvicorn.Server(config)
     await server.serve()
 
 
 async def main():
-    from aibolit.transport.grpc.main import serve as serve_grpc
+    from aibolit.transport.grpc.grpc_client import serve as serve_grpc
 
     await asyncio.gather(serve_grpc(), serve_rest())
 

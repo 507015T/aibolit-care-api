@@ -1,7 +1,6 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
-from aibolit.models import schedule as models
-from aibolit.transport.rest.schedules import schemas
+from aibolit.models.schedules import models
 from sqlalchemy import select
 from datetime import date, datetime, timedelta
 from freezegun import freeze_time
@@ -26,9 +25,9 @@ async def test_post_schedule(async_client, get_testing_db: AsyncSession):
 
     schedules_table = await get_testing_db.execute(select(models.MedicationScheduleOrm))
     created_schedule = schedules_table.scalars().first()
-    end_date = schemas.MedicationSchedule.model_validate(created_schedule).model_dump(mode="json")["end_date"]
-    correct_end_date = (date.today() + timedelta(days=5)).isoformat()
-    assert correct_end_date == end_date
+    end_date = created_schedule.end_date.isoformat()
+    expected_end_date = (date.today() + timedelta(days=5)).isoformat()
+    assert expected_end_date == end_date
 
 
 @pytest.mark.asyncio
@@ -75,8 +74,7 @@ async def test_post_schedule_without_duration_days(async_client, get_testing_db:
 
     schedules_table = await get_testing_db.execute(select(models.MedicationScheduleOrm))
     created_schedule = schedules_table.scalars().first()
-    end_date = schemas.MedicationSchedule.model_validate(created_schedule).model_dump(mode="json")["end_date"]
-    assert None is end_date
+    assert None is created_schedule.end_date
 
 
 @pytest.mark.asyncio
@@ -150,8 +148,7 @@ async def test_post_schedule_with_none_duration_days(async_client, get_testing_d
     assert expected_data == response.json()
 
     schedules_table = await get_testing_db.execute(select(models.MedicationScheduleOrm))
-    created_schedule = schedules_table.scalars().first()
-    duration_days = schemas.MedicationSchedule.model_validate(created_schedule).model_dump(mode="json")["duration_days"]
+    duration_days = schedules_table.scalars().first().duration_days
     assert None is duration_days
 
 
@@ -233,7 +230,7 @@ async def test_get_schedules(async_client, get_testing_db: AsyncSession):
     user1_schedules = filtered_schedules.scalars().all()
     expected_data = {
         "user_id": 1,
-        "schedules": [schemas.MedicationSchedule.model_validate(obj).id for obj in user1_schedules],
+        "schedules": [obj.id for obj in user1_schedules],
     }
     assert expected_data == response.json()
 
@@ -274,7 +271,7 @@ async def test_get_user_schedules(async_client, get_testing_db: AsyncSession):
     user2_schedules = filtered_schedules.scalars().all()
     expected_data = {
         "user_id": 2,
-        "schedules": [schemas.MedicationSchedule.model_validate(obj).id for obj in user2_schedules],
+        "schedules": [obj.id for obj in user2_schedules],
     }
     assert 200 == response.status_code
     assert expected_data == response.json()
