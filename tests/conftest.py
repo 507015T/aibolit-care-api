@@ -2,6 +2,7 @@ import grpc
 import pytest_asyncio
 from httpx import AsyncClient
 from httpx import ASGITransport
+from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from aibolit.core.database import Base, get_db
@@ -15,16 +16,13 @@ from aibolit.transport.grpc.adapters.users.service import GrpcUserService
 from aibolit.transport.grpc.generated import schedule_pb2_grpc, user_pb2_grpc
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
+SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://test_user:@localhost/test_db"
 
-engine = create_async_engine(
-    url=SQLALCHEMY_DATABASE_URL,
-    echo=False,
-)
+engine = create_async_engine(url=SQLALCHEMY_DATABASE_URL, echo=False, poolclass=NullPool)
 TestingSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
 
 
-@pytest_asyncio.fixture(loop_scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def get_testing_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

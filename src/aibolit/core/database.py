@@ -8,7 +8,6 @@ from aibolit.core.config import settings
 
 engine = create_async_engine(
     url=settings.DB_URL,
-    connect_args={"check_same_thread": False},
     echo=settings.DB_ECHO,
 )
 SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
