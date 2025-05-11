@@ -1,3 +1,4 @@
+import logging
 import grpc
 import pytest_asyncio
 from httpx import AsyncClient
@@ -69,3 +70,11 @@ async def stub_for_schedules(grpc_test_channel):
 @pytest_asyncio.fixture
 async def stub_for_users(grpc_test_channel):
     return user_pb2_grpc.UserServiceStub(grpc_test_channel)
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def suppress_logs():
+    """Fixture to suppress logs during tests"""
+    logging.disable(logging.CRITICAL)  # Отключаем все логи
+    yield
+    logging.disable(logging.NOTSET)
