@@ -32,7 +32,7 @@ class ScheduleService:
 
     async def get_all_user_schedules(self, user_id: int) -> MedicationScheduleIdsResponse:
         db_schedules = await self._schedules_repo.get_all_user_schedules(user_id)
-        schedules_with_plan = await self._schedules_with_plan(db_schedules)
+        schedules_with_plan = self._schedules_with_plan(db_schedules)
         schedules = [schedule.id for schedule in schedules_with_plan]
         return MedicationScheduleIdsResponse(user_id=user_id, schedules=schedules)
 
@@ -44,12 +44,12 @@ class ScheduleService:
             raise ScheduleExpiredError(
                 f"The medication '{db_schedule.medication_name}' intake ended on {db_schedule.end_date}"
             )
-        schedule = await self._one_schedule_with_plan(db_schedule)
+        schedule = self._one_schedule_with_plan(db_schedule)
         return schedule
 
     async def get_user_next_takings(self, user_id: int) -> NextTakingsMedicationsResponse:
         user_db_schedules = await self._schedules_repo.get_all_user_schedules(user_id)
-        schedules = await self._schedules_with_plan(user_db_schedules)
+        schedules = self._schedules_with_plan(user_db_schedules)
         next_takings = [
             NextTakingsMedications(
                 schedule_id=next_taking.id,
@@ -62,15 +62,15 @@ class ScheduleService:
 
         return NextTakingsMedicationsResponse(user_id=user_id, next_takings=next_takings)
 
-    async def _schedules_with_plan(self, db_schedules: List[MedicationScheduleOrm]) -> List[MedicationSchedule]:
-        return [await self._one_schedule_with_plan(db_schedule) for db_schedule in db_schedules]
+    def _schedules_with_plan(self, db_schedules: List[MedicationScheduleOrm]) -> List[MedicationSchedule]:
+        return [self._one_schedule_with_plan(db_schedule) for db_schedule in db_schedules]
 
-    async def _one_schedule_with_plan(self, db_schedule) -> MedicationSchedule:
-        daily_plan = await self._generate_daily_plan(db_schedule.frequency)
+    def _one_schedule_with_plan(self, db_schedule) -> MedicationSchedule:
+        daily_plan = self._generate_daily_plan(db_schedule.frequency)
         schedule = MedicationSchedule(**db_schedule.__dict__, daily_plan=daily_plan)
         return MedicationSchedule.model_validate(schedule)
 
-    async def _generate_daily_plan(self, frequency: int) -> List[str]:
+    def _generate_daily_plan(self, frequency: int) -> List[str]:
         """
         Generate a list of time strings ("HH:MM") representing medication intake times.
         Times are evenly distributed between TIME_DAY_START and TIME_DAY_END (from settings),
@@ -81,18 +81,20 @@ class ScheduleService:
         if frequency == 1:
             return [start_day.strftime("%H:%M")]
         interval = (end_day - start_day) / (frequency - 1)
-        times = [await self._round_to_next_interval(start_day + i * interval) for i in range(frequency)]
+        times = [self._round_to_next_interval(start_day + i * interval).strftime("%H:%M") for i in range(frequency)]
         return times
 
-    async def _round_to_next_interval(self, dt: datetime) -> str:
+    @staticmethod
+    def _round_to_next_interval(dt: datetime) -> datetime:
         interval = settings.TIME_ROUNDING_INTERVAL
         minutes = dt.minute
         rounded_minutes = (minutes + (interval - 1)) // interval * interval
         if rounded_minutes == 60:
-            return (dt.replace(minute=0, second=0) + timedelta(hours=1)).strftime("%H:%M")
-        return dt.replace(minute=rounded_minutes, second=0).strftime("%H:%M")
+            return dt.replace(minute=0, second=0) + timedelta(hours=1)
+        return dt.replace(minute=rounded_minutes, second=0)
 
-    def _is_within_timeframe(self, time_str) -> bool:
+    @staticmethod
+    def _is_within_timeframe(time_str: str) -> bool:
         """Check if medication intake time is within allowed timeframe considering:
         - Daily time limits (TIME_DAY_START/END)
         - Active intake grace period (INTAKE_WINDOW)
