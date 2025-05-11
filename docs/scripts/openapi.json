@@ -257,6 +257,7 @@
         "properties": {
           "medication_name": {
             "type": "string",
+            "maxLength": 255,
             "title": "Medication Name"
           },
           "frequency": {
@@ -362,6 +363,7 @@
         "properties": {
           "medication_name": {
             "type": "string",
+            "maxLength": 255,
             "title": "Medication Name"
           },
           "frequency": {

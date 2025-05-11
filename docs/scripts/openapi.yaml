@@ -68,6 +68,7 @@ components:
           title: Id
           type: integer
         medication_name:
+          maxLength: 255
           title: Medication Name
           type: string
         start_date:
@@ -110,6 +111,7 @@ components:
           title: Frequency
           type: integer
         medication_name:
+          maxLength: 255
           title: Medication Name
           type: string
         start_date:

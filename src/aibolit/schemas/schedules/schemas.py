@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, PositiveInt, ConfigDict
 
 
 class MedicationScheduleBase(BaseModel):
-    medication_name: str
+    medication_name: str = Field(max_length=255)
     frequency: PositiveInt = Field(lt=16, examples=[7])
     duration_days: Optional[PositiveInt] = Field(
         None, description="Duration in days, must be > 0, if set", examples=[7]
