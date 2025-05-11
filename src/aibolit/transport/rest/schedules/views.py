@@ -30,7 +30,6 @@ async def create_schedule(
     if not user_exists:
         raise HTTPException(status_code=404, detail=f"User with id={schedule.user_id} not found")
     schedule = await schedule_service.create_schedule(schedule)
-    print('ok')
     return schedule
 
 

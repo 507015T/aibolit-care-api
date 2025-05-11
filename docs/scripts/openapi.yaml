@@ -23,7 +23,7 @@ components:
     MedicationSchedule:
       properties:
         daily_plan:
-          description: Each reception time is a multiple of 15!
+          description: Each reception time is a multiple of 15(Read Only)!
           examples:
           - - 08:00
             - '10:30'
@@ -51,6 +51,7 @@ components:
           - format: date
             type: string
           - type: 'null'
+          description: Read Only!
           examples:
           - '2026-01-06'
           readOnly: true

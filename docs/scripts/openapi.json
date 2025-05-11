@@ -321,6 +321,7 @@
               }
             ],
             "title": "End Date",
+            "description": "Read Only!",
             "readOnly": true,
             "examples": [
               "2026-01-06"
@@ -332,7 +333,7 @@
             },
             "type": "array",
             "title": "Daily Plan",
-            "description": "Each reception time is a multiple of 15!",
+            "description": "Each reception time is a multiple of 15(Read Only)!",
             "readOnly": true,
             "examples": [
               [
