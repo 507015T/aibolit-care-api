@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,8 +21,3 @@ class UserRepo:
         filtering = await self._db.execute(select(UserOrm).filter(UserOrm.id == user_id))
         user = filtering.scalar_one_or_none()
         return user
-
-    async def get_users(self) -> Sequence[UserOrm]:
-        results = await self._db.execute(select(UserOrm))
-        users = results.scalars().all()
-        return users

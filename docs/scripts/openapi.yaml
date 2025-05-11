@@ -1,16 +1,5 @@
 components:
   schemas:
-    AllUsers:
-      properties:
-        users:
-          items:
-            $ref: '#/components/schemas/User'
-          title: Users
-          type: array
-      required:
-      - users
-      title: AllUsers
-      type: object
     HTTPValidationError:
       properties:
         detail:
@@ -34,7 +23,6 @@ components:
             - '22:00'
           items:
             type: string
-          readOnly: true
           title: Daily Plan
           type: array
         duration_days:
@@ -54,7 +42,6 @@ components:
           description: Read Only!
           examples:
           - '2026-01-06'
-          readOnly: true
           title: End Date
         frequency:
           examples:
@@ -172,7 +159,6 @@ components:
         schedule_times:
           items:
             type: string
-          readOnly: true
           title: Schedule Times
           type: array
       required:
@@ -196,16 +182,6 @@ components:
       - user_id
       - next_takings
       title: NextTakingsMedicationsResponse
-      type: object
-    User:
-      properties:
-        id:
-          exclusiveMinimum: 0.0
-          title: Id
-          type: integer
-      required:
-      - id
-      title: User
       type: object
     UserCreateRequest:
       properties: {}
@@ -348,16 +324,6 @@ paths:
           description: Validation Error
       summary: Get All Schedules
   /users:
-    get:
-      operationId: get_users_users_get
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AllUsers'
-          description: Successful Response
-      summary: Get Users
     post:
       operationId: create_user_users_post
       requestBody:

@@ -1,7 +1,10 @@
 from datetime import date, datetime, timedelta
 from typing import List
+from aibolit.core.logger import get_logger
 from aibolit.models.schedules.models import MedicationScheduleOrm
 from aibolit.repositories.schedules.repository import ScheduleRepo
+
+# from aibolit.schemas.openapi_generated.schemas import (
 from aibolit.schemas.schedules.schemas import (
     MedicationSchedule,
     MedicationScheduleCreateRequest,
@@ -10,16 +13,10 @@ from aibolit.schemas.schedules.schemas import (
     NextTakingsMedications,
     NextTakingsMedicationsResponse,
 )
-
 from aibolit.core.config import settings
+from aibolit.core.exceptions import ScheduleExpiredError, ScheduleNotFound
 
-
-class ScheduleExpiredError(Exception):
-    pass
-
-
-class ScheduleNotFound(Exception):
-    pass
+logger = get_logger(__name__)
 
 
 class ScheduleService:
@@ -27,20 +24,27 @@ class ScheduleService:
         self._schedules_repo = schedules_repo
 
     async def create_schedule(self, schedule: MedicationScheduleCreateRequest) -> MedicationScheduleCreateResponse:
+        logger.info("Creating schedule", user_id=schedule.user_id)
         schedule = await self._schedules_repo.create_schedule(schedule)
+        logger.info(f"Schedule created with id={schedule.id}, for user={schedule.user_id}")
         return MedicationScheduleCreateResponse(schedule_id=schedule.id)
 
     async def get_all_user_schedules(self, user_id: int) -> MedicationScheduleIdsResponse:
+        logger.info("Fetching all schedules for user", user_id=user_id)
         db_schedules = await self._schedules_repo.get_all_user_schedules(user_id)
         schedules_with_plan = self._schedules_with_plan(db_schedules)
         schedules = [schedule.id for schedule in schedules_with_plan]
+        logger.info("Fetched user schedules", user_id=user_id, schedule_count=len(schedules))
         return MedicationScheduleIdsResponse(user_id=user_id, schedules=schedules)
 
     async def get_user_schedule(self, user_id: int, schedule_id: int) -> MedicationSchedule:
+        logger.info("Fetching schedule", user_id=user_id, schedule_id=schedule_id)
         db_schedule = await self._schedules_repo.get_user_schedule(schedule_id, user_id)
         if not db_schedule:
+            logger.warning("Schedule not found", user_id=user_id, schedule_id=schedule_id)
             raise ScheduleNotFound(f"The medication schedule with id={schedule_id} for user={user_id} not found")
         if db_schedule.end_date and db_schedule.end_date < date.today():
+            logger.warning("Schedule is expired", schedule_id=schedule_id, end_date=str(db_schedule.end_date))
             raise ScheduleExpiredError(
                 f"The medication '{db_schedule.medication_name}' intake ended on {db_schedule.end_date}"
             )
@@ -48,6 +52,7 @@ class ScheduleService:
         return schedule
 
     async def get_user_next_takings(self, user_id: int) -> NextTakingsMedicationsResponse:
+        logger.info("Fetching next takings", user_id=user_id)
         user_db_schedules = await self._schedules_repo.get_all_user_schedules(user_id)
         schedules = self._schedules_with_plan(user_db_schedules)
         next_takings = [
@@ -59,7 +64,7 @@ class ScheduleService:
             for next_taking in schedules
             if any(map(self._is_within_timeframe, next_taking.daily_plan))
         ]
-
+        logger.info("Next takings determined", user_id=user_id, count=len(next_takings))
         return NextTakingsMedicationsResponse(user_id=user_id, next_takings=next_takings)
 
     def _schedules_with_plan(self, db_schedules: List[MedicationScheduleOrm]) -> List[MedicationSchedule]:

@@ -168,22 +168,6 @@
       }
     },
     "/users": {
-      "get": {
-        "summary": "Get Users",
-        "operationId": "get_users_users_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AllUsers"
-                }
-              }
-            }
-          }
-        }
-      },
       "post": {
         "summary": "Create User",
         "operationId": "create_user_users_post",
@@ -224,22 +208,6 @@
   },
   "components": {
     "schemas": {
-      "AllUsers": {
-        "properties": {
-          "users": {
-            "items": {
-              "$ref": "#/components/schemas/User"
-            },
-            "type": "array",
-            "title": "Users"
-          }
-        },
-        "type": "object",
-        "required": [
-          "users"
-        ],
-        "title": "AllUsers"
-      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -323,7 +291,6 @@
             ],
             "title": "End Date",
             "description": "Read Only!",
-            "readOnly": true,
             "examples": [
               "2026-01-06"
             ]
@@ -335,7 +302,6 @@
             "type": "array",
             "title": "Daily Plan",
             "description": "Each reception time is a multiple of 15(Read Only)!",
-            "readOnly": true,
             "examples": [
               [
                 "08:00",
@@ -474,8 +440,7 @@
               "type": "string"
             },
             "type": "array",
-            "title": "Schedule Times",
-            "readOnly": true
+            "title": "Schedule Times"
           }
         },
         "type": "object",
@@ -507,20 +472,6 @@
           "next_takings"
         ],
         "title": "NextTakingsMedicationsResponse"
-      },
-      "User": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "exclusiveMinimum": 0.0,
-            "title": "Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id"
-        ],
-        "title": "User"
       },
       "UserCreateRequest": {
         "properties": {},

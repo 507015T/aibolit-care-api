@@ -25,7 +25,6 @@ async def serve():
 
         server.add_insecure_port(f'[::]:{settings.GRPC_PORT}')
         await server.start()
-        print(f"gRPC server started on port {settings.GRPC_PORT}")
         await server.wait_for_termination()
 
 

@@ -1,9 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing_extensions import Annotated
-
-
-# from aibolit.schedules import utils, service
-
 from aibolit.core.dependencies import get_user_service, get_schedule_service
 from aibolit.services.users.service import UserService
 
