@@ -17,10 +17,12 @@ class Setting(BaseSettings):
     DB_NAME: str = os.getenv('DB_NAME')
     DB_URL: str = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     DB_ECHO: bool = True
+    GRPC_PORT: int = 50051
     TIME_DAY_START: time = time(8, 0)
     TIME_DAY_END: time = time(22, 0)
+    # in minutes
     NEXT_TAKINGS_PERIOD: int = 120
-    GRPC_PORT: int = 50051
+    INTAKE_WINDOW: int = 30
 
 
 settings = Setting()

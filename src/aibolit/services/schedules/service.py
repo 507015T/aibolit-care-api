@@ -62,14 +62,23 @@ class ScheduleService:
 
         return NextTakingsMedicationsResponse(user_id=user_id, next_takings=next_takings)
 
-    def _is_within_timeframe(self, time_str):
-        current_time = datetime.now()
-        time_limit = current_time + timedelta(minutes=settings.NEXT_TAKINGS_PERIOD)
-        time_obj = datetime.strptime(time_str, "%H:%M").time()
-        return (
-            settings.TIME_DAY_START <= time_obj <= settings.TIME_DAY_END
-            and current_time.time() < time_obj < time_limit.time()
-        )
+    def _is_within_timeframe(self, time_str) -> bool:
+        """Check if medication intake time is within allowed timeframe considering:
+        - Daily time limits (TIME_DAY_START/END)
+        - Active intake grace period (INTAKE_WINDOW)
+        - Upcoming intake window (NEXT_TAKINGS_PERIOD)
+        """
+        current_datetime = datetime.now()
+        current_time = current_datetime.time()
+        target_datetime = datetime.strptime(time_str, "%H:%M")
+        window_end_time = (target_datetime + timedelta(minutes=settings.INTAKE_WINDOW)).time()
+        time_upper_limit = (current_datetime + timedelta(minutes=settings.NEXT_TAKINGS_PERIOD)).time()
+        target_time = target_datetime.time()
+
+        is_within_day_limits = settings.TIME_DAY_START <= target_time <= settings.TIME_DAY_END
+        is_upcoming = current_time <= target_time <= time_upper_limit
+        is_active = target_time <= current_time <= window_end_time
+        return is_within_day_limits and (is_upcoming or is_active)
 
     async def _generate_daily_plan(self, frequency) -> List[str]:
         start_day = datetime.strptime("8:00", "%H:%M")
