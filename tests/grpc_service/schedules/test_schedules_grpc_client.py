@@ -194,5 +194,4 @@ async def test_get_user_next_takings(stub_for_schedules, stub_for_users):
         'user_id': 1,
         'next_takings': [{'schedule_id': 1, 'schedule_name': 'Test Medication', 'schedule_times': ['08:00', '09:00']}],
     }
-    print(response)
     assert expected_data == response
