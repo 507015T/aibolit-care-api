@@ -315,7 +315,7 @@ async def test_get_expired_schedule_for_user(async_client, get_testing_db: Async
     )
     response = await async_client.get("/schedule", params={"schedule_id": 1, "user_id": 1})
     assert 404 == response.status_code
-    expected_data = {'detail': "The medication 'Фенибут' intake ended on 2023-06-04"}
+    expected_data = {"detail": "The medication 'Фенибут' intake ended on 2023-06-04"}
     assert expected_data == response.json()
 
 
@@ -359,7 +359,7 @@ async def test_get_daily_plan_without_user_id(async_client, get_testing_db: Asyn
     response = await async_client.get("/schedule", params={"schedule_id": 1})
     assert 422 == response.status_code
     expected_data = {
-        'detail': [{'input': None, 'loc': ['query', 'user_id'], 'msg': 'Field required', 'type': 'missing'}]
+        "detail": [{"input": None, "loc": ["query", "user_id"], "msg": "Field required", "type": "missing"}]
     }
 
     assert expected_data == response.json()
@@ -379,7 +379,7 @@ async def test_get_daily_plan_without_schedule_id(async_client, get_testing_db: 
     response = await async_client.get("/schedule", params={"user_id": 1})
     assert 422 == response.status_code
     expected_data = {
-        'detail': [{'input': None, 'loc': ['query', 'schedule_id'], 'msg': 'Field required', 'type': 'missing'}]
+        "detail": [{"input": None, "loc": ["query", "schedule_id"], "msg": "Field required", "type": "missing"}]
     }
 
     assert expected_data == response.json()
@@ -399,9 +399,9 @@ async def test_get_daily_plan_without_params(async_client, get_testing_db: Async
     response = await async_client.get("/schedule")
     assert 422 == response.status_code
     expected_data = {
-        'detail': [
-            {'input': None, 'loc': ['query', 'schedule_id'], 'msg': 'Field required', 'type': 'missing'},
-            {'input': None, 'loc': ['query', 'user_id'], 'msg': 'Field required', 'type': 'missing'},
+        "detail": [
+            {"input": None, "loc": ["query", "schedule_id"], "msg": "Field required", "type": "missing"},
+            {"input": None, "loc": ["query", "user_id"], "msg": "Field required", "type": "missing"},
         ]
     }
     assert expected_data == response.json()
@@ -569,7 +569,7 @@ async def test_get_non_existent_schedule_for_user(async_client, get_testing_db: 
     await async_client.post("/users", json={})
     response = await async_client.get("/schedule", params={"user_id": 1, "schedule_id": 1})
     assert 404 == response.status_code
-    expected_data = {'detail': 'The medication schedule with id=1 for user=1 not found'}
+    expected_data = {"detail": "The medication schedule with id=1 for user=1 not found"}
 
     assert expected_data == response.json()
 
@@ -589,7 +589,7 @@ async def test_get_non_existent_user_for_schedule(async_client, get_testing_db: 
     assert 201 == created_schedule.status_code
     response = await async_client.get("/schedule", params={"user_id": 2, "schedule_id": 1})
     assert 404 == response.status_code
-    expected_data = {'detail': 'The medication schedule with id=1 for user=2 not found'}
+    expected_data = {"detail": "The medication schedule with id=1 for user=2 not found"}
 
     assert expected_data == response.json()
 
@@ -609,7 +609,7 @@ async def test_get_non_existent_user_and_schedule(async_client, get_testing_db: 
     assert 201 == created_schedule.status_code
     response = await async_client.get("/schedule", params={"user_id": 66, "schedule_id": 66})
     assert 404 == response.status_code
-    expected_data = {'detail': 'The medication schedule with id=66 for user=66 not found'}
+    expected_data = {"detail": "The medication schedule with id=66 for user=66 not found"}
 
     assert expected_data == response.json()
 
@@ -634,15 +634,15 @@ async def test_get_non_existent_next_takings_for_user(async_client, get_testing_
 @pytest.mark.asyncio
 async def test_get_next_takings_for_user_id_not_int(async_client, get_testing_db: AsyncSession):
     await async_client.post("/users", json={})
-    response = await async_client.get("/next_takings", params={"user_id": 'abc'})
+    response = await async_client.get("/next_takings", params={"user_id": "abc"})
     assert 422 == response.status_code
     expected_data = {
-        'detail': [
+        "detail": [
             {
-                'type': 'int_parsing',
-                'loc': ['query', 'user_id'],
-                'msg': 'Input should be a valid integer, unable to parse string as an integer',
-                'input': 'abc',
+                "type": "int_parsing",
+                "loc": ["query", "user_id"],
+                "msg": "Input should be a valid integer, unable to parse string as an integer",
+                "input": "abc",
             }
         ]
     }
@@ -651,15 +651,15 @@ async def test_get_next_takings_for_user_id_not_int(async_client, get_testing_db
 
 @pytest.mark.asyncio
 async def test_get_user_schedules_with_user_id_not_int(async_client, get_testing_db: AsyncSession):
-    response = await async_client.get("/schedules", params={"user_id": 'abc'})
+    response = await async_client.get("/schedules", params={"user_id": "abc"})
     assert 422 == response.status_code
     expected_data = {
-        'detail': [
+        "detail": [
             {
-                'type': 'int_parsing',
-                'loc': ['query', 'user_id'],
-                'msg': 'Input should be a valid integer, unable to parse string as an integer',
-                'input': 'abc',
+                "type": "int_parsing",
+                "loc": ["query", "user_id"],
+                "msg": "Input should be a valid integer, unable to parse string as an integer",
+                "input": "abc",
             }
         ]
     }
@@ -669,21 +669,21 @@ async def test_get_user_schedules_with_user_id_not_int(async_client, get_testing
 
 @pytest.mark.asyncio
 async def test_get_schedule_with_user_and_schedules_ids_not_int(async_client, get_testing_db: AsyncSession):
-    response = await async_client.get("/schedule", params={"user_id": 'abc', "schedule_id": 'lol'})
+    response = await async_client.get("/schedule", params={"user_id": "abc", "schedule_id": "lol"})
     assert 422 == response.status_code
     expected_data = {
-        'detail': [
+        "detail": [
             {
-                'type': 'int_parsing',
-                'loc': ['query', 'schedule_id'],
-                'msg': 'Input should be a valid integer, unable to parse string as an integer',
-                'input': 'lol',
+                "type": "int_parsing",
+                "loc": ["query", "schedule_id"],
+                "msg": "Input should be a valid integer, unable to parse string as an integer",
+                "input": "lol",
             },
             {
-                'type': 'int_parsing',
-                'loc': ['query', 'user_id'],
-                'msg': 'Input should be a valid integer, unable to parse string as an integer',
-                'input': 'abc',
+                "type": "int_parsing",
+                "loc": ["query", "user_id"],
+                "msg": "Input should be a valid integer, unable to parse string as an integer",
+                "input": "abc",
             },
         ]
     }
@@ -700,7 +700,7 @@ async def test_post_schedule_with_start_date(async_client, get_testing_db: Async
             "frequency": 15,
             "duration_days": 4,
             "user_id": 1,
-            "start_date": datetime.now().strftime('%Y-%m-%d'),
+            "start_date": datetime.now().strftime("%Y-%m-%d"),
         },
     )
     assert 201 == response.status_code
@@ -708,7 +708,7 @@ async def test_post_schedule_with_start_date(async_client, get_testing_db: Async
     assert expected_data == response.json()
     schedules_table = await get_testing_db.execute(select(models.MedicationScheduleOrm))
     created_schedule = schedules_table.scalars().first()
-    assert (datetime.now() + timedelta(days=4)).strftime('%Y-%m-%d') == created_schedule.end_date.strftime('%Y-%m-%d')
+    assert (datetime.now() + timedelta(days=4)).strftime("%Y-%m-%d") == created_schedule.end_date.strftime("%Y-%m-%d")
 
 
 @pytest.mark.asyncio
@@ -721,7 +721,7 @@ async def test_post_schedule_with_old_start_date(async_client, get_testing_db: A
             "frequency": 15,
             "duration_days": 4,
             "user_id": 1,
-            "start_date": date(year=2000, month=1, day=1).strftime('%Y-%m-%d'),
+            "start_date": date(year=2000, month=1, day=1).strftime("%Y-%m-%d"),
         },
     )
     assert 201 == response.status_code
@@ -729,7 +729,7 @@ async def test_post_schedule_with_old_start_date(async_client, get_testing_db: A
     assert expected_data == response.json()
     schedules_table = await get_testing_db.execute(select(models.MedicationScheduleOrm))
     created_schedule = schedules_table.scalars().first()
-    assert '2000-01-05' == created_schedule.end_date.strftime('%Y-%m-%d')
+    assert "2000-01-05" == created_schedule.end_date.strftime("%Y-%m-%d")
 
 
 @pytest.mark.asyncio
@@ -742,7 +742,7 @@ async def test_post_schedule_with_end_date(async_client, get_testing_db: AsyncSe
             "frequency": 15,
             "duration_days": 4,
             "user_id": 1,
-            "start_date": datetime.now().strftime('%Y-%m-%d'),
+            "start_date": datetime.now().strftime("%Y-%m-%d"),
             "end_date": "2025-00-00",
         },
     )
@@ -751,7 +751,7 @@ async def test_post_schedule_with_end_date(async_client, get_testing_db: AsyncSe
     assert expected_data == response.json()
     schedules_table = await get_testing_db.execute(select(models.MedicationScheduleOrm))
     created_schedule = schedules_table.scalars().first()
-    assert (datetime.now() + timedelta(days=4)).strftime('%Y-%m-%d') == created_schedule.end_date.strftime('%Y-%m-%d')
+    assert (datetime.now() + timedelta(days=4)).strftime("%Y-%m-%d") == created_schedule.end_date.strftime("%Y-%m-%d")
 
 
 @pytest.mark.asyncio
@@ -764,13 +764,13 @@ async def test_post_schedule_with_daily_plan(async_client, get_testing_db: Async
             "frequency": 4,
             "duration_days": 4,
             "user_id": 1,
-            "start_date": datetime.now().strftime('%Y-%m-%d'),
+            "start_date": datetime.now().strftime("%Y-%m-%d"),
             "daily_plan": ["8:00", "19:43"],
         },
     )
     assert 201 == response.status_code
-    response = await async_client.get('/schedule', params={"user_id": 1, "schedule_id": 1})
-    assert ['08:00', '12:45', '17:30', '22:00'] == response.json()['daily_plan']
+    response = await async_client.get("/schedule", params={"user_id": 1, "schedule_id": 1})
+    assert ["08:00", "12:45", "17:30", "22:00"] == response.json()["daily_plan"]
 
 
 @pytest.mark.asyncio
@@ -783,18 +783,18 @@ async def test_post_schedule_with_wrong_start_date(async_client, get_testing_db:
             "frequency": 4,
             "duration_days": 4,
             "user_id": 1,
-            "start_date": '2000-00-00',
+            "start_date": "2000-00-00",
         },
     )
     assert 422 == response.status_code
     expected_data = {
-        'detail': [
+        "detail": [
             {
-                'type': 'date_from_datetime_parsing',
-                'loc': ['body', 'start_date'],
-                'msg': 'Input should be a valid date or datetime, month value is outside expected range of 1-12',
-                'input': '2000-00-00',
-                'ctx': {'error': 'month value is outside expected range of 1-12'},
+                "type": "date_from_datetime_parsing",
+                "loc": ["body", "start_date"],
+                "msg": "Input should be a valid date or datetime, month value is outside expected range of 1-12",
+                "input": "2000-00-00",
+                "ctx": {"error": "month value is outside expected range of 1-12"},
             }
         ]
     }
@@ -807,24 +807,24 @@ async def test_post_schedule_with_large_med_name(async_client, get_testing_db: A
     response = await async_client.post(
         "/schedule",
         json={
-            "medication_name": 'л' * 256,
+            "medication_name": "л" * 256,
             "frequency": 4,
             "duration_days": 4,
             "user_id": 1,
         },
     )
     assert 422 == response.status_code
-    assert 'String should have at most 255 characters' == response.json()['detail'][0]['msg']
+    assert "String should have at most 255 characters" == response.json()["detail"][0]["msg"]
 
 
 @pytest.mark.asyncio
 async def test_post_schedule_with_special_symbols_in_med_name(async_client, get_testing_db: AsyncSession):
     await async_client.post("/users", json={})
     med_names = [
-        'Аспирин®',
-        'Paracetamol™',
-        '℞ Ибупрофен',
-        'C#-ингибитор',
+        "Аспирин®",
+        "Paracetamol™",
+        "℞ Ибупрофен",
+        "C#-ингибитор",
         "<script>alert('XSS')</script>",
         "薬",
         "😷Antibiotic",

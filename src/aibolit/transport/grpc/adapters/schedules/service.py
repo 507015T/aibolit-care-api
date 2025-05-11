@@ -54,7 +54,7 @@ class GrpcScheduleService(SchedulesServiceServicer):
             logger.info("Schedule expired", user_id=request.user_id, schedule_id=request.schedule_id)
             await context.abort(grpc.StatusCode.FAILED_PRECONDITION, str(e))
 
-        schedule_dict = MedicationSchedule(**schedule.model_dump(mode='python')).model_dump(mode='python')
+        schedule_dict = MedicationSchedule(**schedule.model_dump(mode="python")).model_dump(mode="python")
         start_date, end_date = schedule_dict.pop("start_date"), schedule_dict.pop("end_date")
         return schedule_pb2.MedicationSchedule(
             **schedule_dict, start_date=self._to_timestamp(start_date), end_date=self._to_timestamp(end_date)
@@ -64,7 +64,7 @@ class GrpcScheduleService(SchedulesServiceServicer):
         logger.info("gRPC GetUserNextTakings called", user_id=request.user_id)
         schedules = await self._schedules_service.get_user_next_takings(request.user_id)
         next_takings = schedules.next_takings[0]
-        next_takings = schedule_pb2.NextTakingsMedications(**next_takings.model_dump(mode='python'))
+        next_takings = schedule_pb2.NextTakingsMedications(**next_takings.model_dump(mode="python"))
         return schedule_pb2.GetUserNextTakingsResponse(user_id=request.user_id, next_takings=[next_takings])
 
     @staticmethod

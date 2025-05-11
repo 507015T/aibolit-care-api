@@ -23,7 +23,6 @@ class ScheduleRepo:
         return db_schedule
 
     async def get_all_user_schedules(self, user_id: int) -> Optional[Sequence[MedicationScheduleOrm]]:
-
         db_request = await self._db.execute(
             select(MedicationScheduleOrm)
             .filter(MedicationScheduleOrm.user_id == user_id)

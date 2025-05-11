@@ -51,7 +51,7 @@ async def grpc_test_channel(get_testing_db: AsyncSession):
     schedule_pb2_grpc.add_SchedulesServiceServicer_to_server(
         GrpcScheduleService(schedules_service, users_service), server
     )
-    port = server.add_insecure_port('[::]:0')
+    port = server.add_insecure_port("[::]:0")
     await server.start()
 
     channel = grpc.aio.insecure_channel(f"localhost:{port}")

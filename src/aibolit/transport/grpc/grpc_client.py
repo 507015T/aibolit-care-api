@@ -23,7 +23,7 @@ async def serve():
         add_UserServiceServicer_to_server(GrpcUserService(users_service), server)
         add_SchedulesServiceServicer_to_server(GrpcScheduleService(schedules_service, users_service), server)
 
-        server.add_insecure_port(f'[::]:{settings.GRPC_PORT}')
+        server.add_insecure_port(f"[::]:{settings.GRPC_PORT}")
         await server.start()
         await server.wait_for_termination()
 

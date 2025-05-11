@@ -14,7 +14,11 @@ def configure_logging():
         else structlog.processors.JSONRenderer(indent=4, ensure_ascii=False)
     )
     file_handler = RotatingFileHandler(
-        settings.LOGS_DIR / "app.log", mode="a", encoding="utf-8", backupCount=5, maxBytes=10 * 1024 * 1024  # 10 MB
+        settings.LOGS_DIR / "app.log",
+        mode="a",
+        encoding="utf-8",
+        backupCount=5,
+        maxBytes=10 * 1024 * 1024,  # 10 MB
     )
 
     log_handlers = [logging.StreamHandler(), file_handler]

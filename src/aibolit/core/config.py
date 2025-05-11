@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     APP_PORT: int = 8000
     APP_HOST: str = "localhost"
     DB_USER: str = "aibolit_user"
-    DB_PASS: str = ''
+    DB_PASS: str = ""
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
     DB_NAME: str = "aibolit_db"
