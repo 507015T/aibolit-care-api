@@ -23,6 +23,7 @@ class Setting(BaseSettings):
     # in minutes
     NEXT_TAKINGS_PERIOD: int = 120
     INTAKE_WINDOW: int = 30
+    TIME_ROUNDING_INTERVAL: int = 15
 
 
 settings = Setting()

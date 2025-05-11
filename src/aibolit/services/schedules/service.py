@@ -62,6 +62,36 @@ class ScheduleService:
 
         return NextTakingsMedicationsResponse(user_id=user_id, next_takings=next_takings)
 
+    async def _schedules_with_plan(self, db_schedules: List[MedicationScheduleOrm]) -> List[MedicationSchedule]:
+        return [await self._one_schedule_with_plan(db_schedule) for db_schedule in db_schedules]
+
+    async def _one_schedule_with_plan(self, db_schedule) -> MedicationSchedule:
+        daily_plan = await self._generate_daily_plan(db_schedule.frequency)
+        schedule = MedicationSchedule(**db_schedule.__dict__, daily_plan=daily_plan)
+        return MedicationSchedule.model_validate(schedule)
+
+    async def _generate_daily_plan(self, frequency: int) -> List[str]:
+        """
+        Generate a list of time strings ("HH:MM") representing medication intake times.
+        Times are evenly distributed between TIME_DAY_START and TIME_DAY_END (from settings),
+        each rounded up to the nearest TIME_ROUNDING_INTERVAL.
+        """
+        start_day = datetime.combine(date.today(), settings.TIME_DAY_START)
+        end_day = datetime.combine(date.today(), settings.TIME_DAY_END)
+        if frequency == 1:
+            return [start_day.strftime("%H:%M")]
+        interval = (end_day - start_day) / (frequency - 1)
+        times = [await self._round_to_next_interval(start_day + i * interval) for i in range(frequency)]
+        return times
+
+    async def _round_to_next_interval(self, dt: datetime) -> str:
+        interval = settings.TIME_ROUNDING_INTERVAL
+        minutes = dt.minute
+        rounded_minutes = (minutes + (interval - 1)) // interval * interval
+        if rounded_minutes == 60:
+            return (dt.replace(minute=0, second=0) + timedelta(hours=1)).strftime("%H:%M")
+        return dt.replace(minute=rounded_minutes, second=0).strftime("%H:%M")
+
     def _is_within_timeframe(self, time_str) -> bool:
         """Check if medication intake time is within allowed timeframe considering:
         - Daily time limits (TIME_DAY_START/END)
@@ -79,30 +109,3 @@ class ScheduleService:
         is_upcoming = current_time <= target_time <= time_upper_limit
         is_active = target_time <= current_time <= window_end_time
         return is_within_day_limits and (is_upcoming or is_active)
-
-    async def _generate_daily_plan(self, frequency) -> List[str]:
-        start_day = datetime.strptime("8:00", "%H:%M")
-        end_day = datetime.strptime("22:00", "%H:%M")
-        if frequency == 1:
-            return ["8:00"]
-        interval = (end_day - start_day) / (frequency - 1)
-        times = []
-        for freq in range(frequency):
-            estimated_time = start_day + (freq * interval)
-            minutes_of_estimated_time = estimated_time.minute
-            new_minutes_of_estimated_time = (minutes_of_estimated_time + 14) // 15 * 15
-            if new_minutes_of_estimated_time == 60:
-                estimated_time = estimated_time.replace(minute=0) + timedelta(hours=1)
-            else:
-                estimated_time = estimated_time.replace(minute=new_minutes_of_estimated_time)
-            times.append(estimated_time.strftime("%H:%M"))
-
-        return times
-
-    async def _one_schedule_with_plan(self, db_schedule) -> MedicationSchedule:
-        daily_plan = await self._generate_daily_plan(db_schedule.frequency)
-        schedule = MedicationSchedule(**db_schedule.__dict__, daily_plan=daily_plan)
-        return MedicationSchedule.model_validate(schedule)
-
-    async def _schedules_with_plan(self, db_schedules: List[MedicationScheduleOrm]) -> List[MedicationSchedule]:
-        return [await self._one_schedule_with_plan(db_schedule) for db_schedule in db_schedules]
