@@ -15,7 +15,7 @@ A powerful backend system for managing medical schedules, implemented using **Fa
 	
   * [Structure](#structure)
   * [Requirements](#requirements)
-  * [Setup](#setup)
+  * [Installation](#installation)
     
   * [Usage](#usage)
 	
@@ -120,7 +120,7 @@ Before you start, make sure the following tools are installed:
 
 ---
 
-## **Setup**
+## **Installation**
 
 ```bash
 # Clone the repository from GitHub and navigate into the project directory
@@ -132,11 +132,22 @@ mv .env.example .env
 # Sync all project dependencies
 uv sync
 
+# Very important: Install the package in editable mode using pip
+uv pip install -e .
+
+# Start the database
+just db-start
+
+# Migrate 
+uv run alembic upgrade head
+
 # Make the main.py script executable
 chmod +x src/aibolit/main.py
 
 # Run the application (gRPC + REST API)
 ./src/aibolit/main.py
+# Alternatively, you can use the `just` command for running the app
+just app
 ```
 
 ---
@@ -164,8 +175,8 @@ Available recipes:
     lint                        # Run all checks: linters and formatting validation
 
     [app]
-    api                         # Start app locally (only API)
-    app                         # Start app locally
+    api                         # Start app locally (only REST)
+    app                         # Start app locally (gRPC + REST)
     grpc                        # Start app locally (only gRPC)
 
     [database]
@@ -194,7 +205,7 @@ Available recipes:
 
     [testing]
     test-all-coverage           # Run all tests and calculate coverage
-    test-api                    # Run E2E tests for API
+    test-api                    # Run E2E tests for REST API
     test-grpc                   # Run E2E tests for gRPC
     test-utils                  # Run unit tests for plan generation, time rounding, timeframe check
     tests                       # Run all tests

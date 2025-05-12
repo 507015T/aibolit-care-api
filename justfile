@@ -55,7 +55,7 @@ tests:
 test-grpc:
     uv run pytest tests/test_schedule_servicer.py -s -v
 
-# Run E2E tests for API
+# Run E2E tests for REST API
 [group('testing')]
 test-api:
     uv run pytest tests/test_schedule_api.py -s -v
@@ -111,7 +111,7 @@ stop-clear:
 
 # --- Locally start app ---
 
-# Start app locally(only API)
+# Start app locally(only REST)
 [group('app')]
 api:
     uv run uvicorn src.aibolit.main:make_app --factory
@@ -121,7 +121,7 @@ api:
 grpc:
     uv run src/aibolit/transport/grpc/grpc_client.py
 
-# Start app locally
+# Start app locally(gRPC + REST)
 [group('app')]
 app:
     ./src/aibolit/main.py
