@@ -5,9 +5,10 @@ services:
     container_name: aibolit
     restart: unless-stopped
     environment:
+      DB_HOST: db
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
-      DB_PORT: ${DB_PORT}
+      DB_PORT: 5432
       DB_NAME: ${DB_NAME}
       LOG_FILE: /app/logs/app.log
     ports:
