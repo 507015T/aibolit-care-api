@@ -44,17 +44,3 @@ class ScheduleRepo:
         )
         schedule = result.scalars().first()
         return schedule
-
-    async def get_user_next_takings(self, user_id: int) -> Optional[Sequence[MedicationScheduleOrm]]:
-        result = await self._db.execute(
-            select(MedicationScheduleOrm)
-            .filter(MedicationScheduleOrm.user_id == user_id)
-            .filter(
-                or_(
-                    MedicationScheduleOrm.end_date >= date.today(),
-                    MedicationScheduleOrm.end_date.is_(None),
-                ),
-            ),
-        )
-        schedules = result.scalars().all()
-        return schedules
