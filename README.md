@@ -1,5 +1,9 @@
-# **AibolitCare API ✱**
-
+<a href="https://507015t.github.io/aibolit-care-api/">
+  <img src="https://github.com/507015T/aibolit-care-api/blob/main/docs/logo.png" alt="logo" width="500">
+</a>
+<br>
+<b>Click on the logo or follow the link to see the API demonstration:</b> <a href="https://507015t.github.io/aibolit-care-api/">Click</a>
+<br><br>
 A powerful backend system for managing medical schedules, implemented using **FastAPI**, **gRPC**, and a clean service-layer architecture. This project supports REST and gRPC APIs, with strong typing, logging, and containerization.
 
 ---
