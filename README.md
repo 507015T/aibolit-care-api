@@ -6,23 +6,22 @@ A powerful backend system for managing medical schedules, implemented using **Fa
 
 ## **Table of Contents**
 
-  ✱ [Features](#features)
-    
-  ✱ [Tech Stack](#tech-stack)
+  * [Features](#features)
+  * [Tech Stack](#tech-stack)
 	
-  ✱ [Structure](#structure)
-	
-  ✱ [Setup](#setup)
+  * [Structure](#structure)
+  * [Requirements](#requirements)
+  * [Setup](#setup)
     
-  ✱ [Usage](#usage)
+  * [Usage](#usage)
 	
-  ✱ [JUST commands](#just-commands)
+  * [JUST commands](#just-commands)
 	
-  ✱ [API Overview](#api-overview)
+  * [API Overview](#api-overview)
     
-  ✱ [gRPC Services](#grpc-services)
+  * [gRPC Services](#grpc-services)
     
-  ✱ [Logging](#logging)
+  * [Logging](#logging)
 
 ---
 
@@ -105,6 +104,18 @@ A powerful backend system for managing medical schedules, implemented using **Fa
 
 ```
 ---
+
+
+## **Requirements**
+
+Before you start, make sure the following tools are installed:
+* [**uv**](https://github.com/astral-sh/uv) – fast Python package manager and task runner
+* [**just**](https://github.com/casey/just) – task automation
+* [**Docker**](https://www.docker.com/products/docker-desktop/) – container runtime
+* [**Docker Compose**](https://docs.docker.com/compose/install/) – service orchestration (v2+)
+
+---
+
 ## **Setup**
 
 ```bash
@@ -185,6 +196,10 @@ Available recipes:
     tests                       # Run all tests
 
 ```
+***For \[testing\](except test-utils) and \[app\] require a database. Activate:***
+```bash
+just db-start
+``` 
 ---
 
 ## **API Overview**
