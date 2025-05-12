@@ -76,10 +76,15 @@ A powerful backend system for managing medical schedules, implemented using **Fa
 ├── alembic/                               # DB migrations powered by Alembic
 │   └── versions/                          # Migration scripts
 ├── alembic.ini                            # Alembic configuration
+├── docker/
+│   └── init-scripts/                      # Scripts for creating multiple databases during initialization
 ├── docker-compose.yml                     # Compose file for PostgreSQL and other services
 ├── Dockerfile                             # Application Docker image
 ├── docs/                                  # OpenAPI spec & helper scripts
-│   └── scripts/                          
+│   ├── index.html                         # Documentation homepage
+│   ├── logo.png                           # Logo for documentation
+│   ├── openapi/                           # Convert script from json to yaml and specs
+│   └── swagger-ui/                        # Swagger UI files 
 ├── justfile                               # Dev automation commands (tests, lint, build, etc.)
 ├── pyproject.toml                         # Project metadata and dependency definitions
 ├── pyrightconfig.json                     # Type checking config (Pyright)
