@@ -1,5 +1,6 @@
 from concurrent import futures
 import grpc
+from aibolit.core.logger import configure_logging, get_logger
 from aibolit.core.config import settings
 from aibolit.core.database import get_db_grpc
 from aibolit.repositories.schedules.repository import ScheduleRepo
@@ -10,6 +11,9 @@ from aibolit.transport.grpc.adapters.schedules.service import GrpcScheduleServic
 from aibolit.transport.grpc.generated.schedule_pb2_grpc import add_SchedulesServiceServicer_to_server
 from aibolit.transport.grpc.generated.user_pb2_grpc import add_UserServiceServicer_to_server
 from aibolit.transport.grpc.adapters.users.service import GrpcUserService
+
+configure_logging()
+logger = get_logger(__name__)
 
 
 async def serve():
@@ -24,11 +28,22 @@ async def serve():
         add_SchedulesServiceServicer_to_server(GrpcScheduleService(schedules_service, users_service), server)
 
         server.add_insecure_port(f"[::]:{settings.GRPC_PORT}")
+        logger.info(f"gRPC server started on port {settings.GRPC_PORT}")
         await server.start()
-        await server.wait_for_termination()
+        try:
+            await server.wait_for_termination()
+        except asyncio.CancelledError:
+            logger.info("Shutting down gRPC server...")
+            await server.stop(grace=5)
+            raise
 
 
 if __name__ == "__main__":
+    import sys
     import asyncio
 
-    asyncio.run(serve())
+    try:
+        asyncio.run(serve())
+    except KeyboardInterrupt:
+        logger.info("Interrupted")
+        sys.exit(0)

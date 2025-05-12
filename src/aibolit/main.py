@@ -36,8 +36,11 @@ def make_app() -> FastAPI:
     return app
 
 
+app = make_app()
+
+
 async def serve_rest():
-    config = uvicorn.Config("main:app", host=settings.APP_HOST, port=settings.APP_PORT, access_log=False)
+    config = uvicorn.Config(app=app, host=settings.APP_HOST, port=settings.APP_PORT, access_log=False)
     server = uvicorn.Server(config)
     await server.serve()
 
@@ -50,4 +53,11 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    import sys
+    import asyncio
+
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Interrupted")
+        sys.exit(0)
