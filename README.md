@@ -109,7 +109,7 @@ A powerful backend system for managing medical schedules, implemented using **Fa
 
 ```bash
 # Clone the repository from GitHub and navigate into the project directory
-git clone https://github.com/507015T/aibolitcare-backend && cd aibolitcare-backend
+git clone https://github.com/507015T/aibolit-care-api && cd aibolit-care-api
 
 # Rename the .env.example file to .env to configure the environment
 mv .env.example .env

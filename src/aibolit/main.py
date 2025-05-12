@@ -29,7 +29,11 @@ async def lifespan(
 
 
 def make_app() -> FastAPI:
-    app = FastAPI(lifespan=lifespan, debug=settings.DEBUG)
+    description = (
+        "AibolitCare is a scheduling system for medical services."
+        "It provides APIs to manage appointment schedules and time slots for taking medications."
+    )
+    app = FastAPI(lifespan=lifespan, debug=settings.DEBUG, title="AibolitCare API", description=description)
     app.add_middleware(LoggingMiddleware)
     app.include_router(schedules_router)
     app.include_router(users_router)

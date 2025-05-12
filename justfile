@@ -131,11 +131,11 @@ app:
 # Generate pydantic schemas from openapi
 [group('generating')]
 generate-openapi:
-    cd docs/scripts/ && uv run convert_script.py && cd ../..
+    cd docs/openapi/ && uv run convert_script.py && cd ../..
     mkdir -p src/aibolit/schemas/openapi_generated
     touch src/aibolit/schemas/openapi_generated/__init__.py
     uv run datamodel-codegen \
-        --input docs/scripts/openapi.json \
+        --input docs/openapi/openapi.json \
         --input-file-type openapi \
         --output-model-type pydantic_v2.BaseModel \
         --output src/aibolit/schemas/openapi_generated/schemas.py

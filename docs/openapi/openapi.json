@@ -1,7 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "FastAPI",
+    "title": "AibolitCare API",
+    "description": "AibolitCare is a scheduling system for medical services.It provides APIs to manage appointment schedules and time slots for taking medications.",
     "version": "0.1.0"
   },
   "paths": {
