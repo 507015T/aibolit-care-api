@@ -45,22 +45,91 @@ ruff:
 
 # --- Testing ---
 
-# Run tests using pytest
+# Run all tests
 [group('testing')]
 tests:
     uv run pytest .
 
+# Run E2E tests for gRPC
+[group('testing')]
+test-grpc:
+    uv run pytest tests/test_schedule_servicer.py -s -v
 
-# --- Building ---
+# Run E2E tests for API
+[group('testing')]
+test-api:
+    uv run pytest tests/test_schedule_api.py -s -v
 
-# Build DataBase
-[group('building')]
-build-depends:
-    docker-compose -f docker-compose.yml up -d db --remove-orphans --build
+# Run unit tests for plan generation, time rounding, timeframe check
+[group('testing')]
+test-utils:
+    uv run pytest tests/test_schedule_utils.py -s -v
+
+# Run all tests and calculate coverage
+[group('testing')]
+test-all-coverage:
+    uv run pytest --cov=src
+
+# --- Docker-database ---
+
+# Build and run database
+[group('database')]
+db-start:
+    docker compose up -d db --build
+
+# Run database
+[group('database')]
+db:
+    docker compose up -d db
+
+# Stop database
+[group('database')]
+db-stop:
+    docker compose down
+
+# Stop and clear database
+[group('database')]
+db-clear:
+    docker compose down -v db
+
+# --- Full App in Docker ---
+
+# Start app in Docker
+[group('start')]
+start:
+    docker compose up --build
+
+# Stop app in Docker
+[group('start')]
+stop:
+    docker compose down
+
+# Stop and clear app container in Docker
+[group('start')]
+stop-clear:
+    docker compose down -v
+
+# --- Locally start app ---
+
+# Start app locally(only API)
+[group('app')]
+api:
+    uv run uvicorn src.aibolit.main:make_app --factory
+
+# Start app locally(only gRPC)
+[group('app')]
+grpc:
+    uv run src/aibolit/transport/grpc/grpc_client.py
+
+# Start app locally
+[group('app')]
+app:
+    ./src/aibolit/main.py
 
 # --- Generate-code ---
 
-[group('openapi')]
+# Generate pydantic schemas from openapi
+[group('generating')]
 generate-openapi:
     cd docs/scripts/ && uv run convert_script.py && cd ../..
     mkdir -p src/aibolit/schemas/openapi_generated
@@ -71,7 +140,8 @@ generate-openapi:
         --output-model-type pydantic_v2.BaseModel \
         --output src/aibolit/schemas/openapi_generated/schemas.py
 
-[group('grpc')]
+# Generate Python code from .proto files for gRPC
+[group('generating')]
 generate-grpc:
 	uv run -m grpc_tools.protoc \
 		-Iaibolit/transport/grpc/generated=src/aibolit/transport/grpc/protos \
