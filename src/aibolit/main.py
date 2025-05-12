@@ -28,10 +28,12 @@ async def lifespan(
     await db_engine.dispose()
 
 
-app = FastAPI(lifespan=lifespan, debug=settings.DEBUG)
-app.add_middleware(LoggingMiddleware)
-app.include_router(schedules_router)
-app.include_router(users_router)
+def make_app() -> FastAPI:
+    app = FastAPI(lifespan=lifespan, debug=settings.DEBUG)
+    app.add_middleware(LoggingMiddleware)
+    app.include_router(schedules_router)
+    app.include_router(users_router)
+    return app
 
 
 async def serve_rest():

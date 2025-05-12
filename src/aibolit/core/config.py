@@ -15,12 +15,18 @@ class Settings(BaseSettings):
     APP_PORT: int = 8000
     APP_HOST: str = "localhost"
     DB_USER: str = "aibolit_user"
-    DB_PASS: str = ""
+    DB_PASS: str = "aibolit_password"
     DB_HOST: str = "localhost"
-    DB_PORT: int = 5432
+    DB_PORT: int = 6543
     DB_NAME: str = "aibolit_db"
     DB_ECHO: bool = False
     GRPC_PORT: int = 50051
+    # for tests
+    TEST_DB_USER: str = "aibolit_user"
+    TEST_DB_NAME: str = "test_aibolit_db"
+    TEST_DB_PASS: str = "aibolit_password"
+    TEST_DB_HOST: str = "localhost"
+    TEST_DB_PORT: int = 6543
     # -------------
     TIME_DAY_START: time = time(8, 0)
     TIME_DAY_END: time = time(22, 0)

@@ -9,15 +9,20 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from aibolit.core.database import Base, get_db
 from aibolit.repositories.schedules.repository import ScheduleRepo
 from aibolit.repositories.users.repository import UserRepo
-from aibolit.main import app
+from aibolit.main import make_app
 from aibolit.services.users.service import UserService
 from aibolit.services.schedules.service import ScheduleService
 from aibolit.transport.grpc.adapters.schedules.service import GrpcScheduleService
 from aibolit.transport.grpc.adapters.users.service import GrpcUserService
 from aibolit.transport.grpc.generated import schedule_pb2_grpc, user_pb2_grpc
+from aibolit.core.config import settings
 
 
-SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://test_user:@localhost/test_db"
+SQLALCHEMY_DATABASE_URL = (
+    f"postgresql+asyncpg://{settings.TEST_DB_USER}:"
+    f"{settings.TEST_DB_PASS}@{settings.TEST_DB_HOST}:"
+    f"{settings.TEST_DB_PORT}/{settings.TEST_DB_NAME}"
+)
 
 engine = create_async_engine(url=SQLALCHEMY_DATABASE_URL, echo=False, poolclass=NullPool)
 TestingSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
@@ -36,6 +41,7 @@ async def get_testing_db():
 
 @pytest_asyncio.fixture(loop_scope="function")
 async def async_client(get_testing_db):
+    app = make_app()
     app.dependency_overrides[get_db] = lambda: get_testing_db
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac

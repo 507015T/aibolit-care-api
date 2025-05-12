@@ -56,7 +56,7 @@ tests:
 # Build DataBase
 [group('building')]
 build-depends:
-    docker compose -f .docker/docker-compose-local.yml up -d --remove-orphans --build
+    docker-compose -f docker-compose.yml up -d db --remove-orphans --build
 
 # --- Generate-code ---
 
