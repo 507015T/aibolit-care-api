@@ -184,14 +184,83 @@ async def test_get_user_schedule(stub_for_schedules, stub_for_users):
 async def test_get_user_next_takings(stub_for_schedules, stub_for_users):
     await stub_for_users.CreateUser(user_pb2.CreateUserRequest())
 
-    create_schedule = schedule_pb2.CreateScheduleRequest(
-        user_id=1, medication_name="Test Medication", frequency=15, duration_days=10
+    create_schedule_1 = schedule_pb2.CreateScheduleRequest(
+        user_id=1, medication_name="Test Medication 1", frequency=15, duration_days=10
     )
-    await stub_for_schedules.CreateSchedule(create_schedule)
+    await stub_for_schedules.CreateSchedule(create_schedule_1)
+    create_schedule_2 = schedule_pb2.CreateScheduleRequest(
+        user_id=1, medication_name="Test Medication 2", frequency=15, duration_days=10
+    )
+    await stub_for_schedules.CreateSchedule(create_schedule_2)
     request = schedule_pb2.GetUserNextTakingsRequest(user_id=1)
     response = MessageToDict(await stub_for_schedules.GetUserNextTakings(request), preserving_proto_field_name=True)
     expected_data = {
         "user_id": 1,
-        "next_takings": [{"schedule_id": 1, "schedule_name": "Test Medication", "schedule_times": ["08:00", "09:00"]}],
+        "next_takings": [
+            {"schedule_id": 1, "schedule_name": "Test Medication 1", "schedule_times": ["08:00", "09:00"]},
+            {"schedule_id": 2, "schedule_name": "Test Medication 2", "schedule_times": ["08:00", "09:00"]},
+        ],
     }
+    assert expected_data == response
+
+
+@freeze_time("2025-01-01 7:59:59")
+@pytest.mark.asyncio
+async def test_get_future_next_takings(stub_for_schedules, stub_for_users):
+    await stub_for_users.CreateUser(user_pb2.CreateUserRequest())
+
+    start_date = Timestamp()
+    start_date.FromDatetime(datetime(year=2025, month=5, day=5))
+    create_schedule = schedule_pb2.CreateScheduleRequest(
+        user_id=1, medication_name="Test Medication", frequency=15, duration_days=10, start_date=start_date
+    )
+    await stub_for_schedules.CreateSchedule(create_schedule)
+    request = schedule_pb2.GetUserNextTakingsRequest(user_id=1)
+    response = MessageToDict(
+        await stub_for_schedules.GetUserNextTakings(request),
+        preserving_proto_field_name=True,
+        always_print_fields_with_no_presence=True,
+    )
+    expected_data = {
+        "user_id": 1,
+        "next_takings": [],
+    }
+    assert expected_data == response
+
+
+@pytest.mark.asyncio
+async def test_get_future_schedule(stub_for_schedules, stub_for_users):
+    await stub_for_users.CreateUser(user_pb2.CreateUserRequest())
+    start_date = Timestamp()
+    start_date.FromDatetime(datetime.now() + timedelta(days=4))
+    create_schedule = schedule_pb2.CreateScheduleRequest(
+        user_id=1, medication_name="Test Medication", frequency=15, duration_days=10, start_date=start_date
+    )
+    await stub_for_schedules.CreateSchedule(create_schedule)
+    request = schedule_pb2.GetUserScheduleRequest(user_id=1, schedule_id=1)
+    with pytest.raises(grpc.aio.AioRpcError) as exc_info:
+        await stub_for_schedules.GetUserSchedule(request)
+    err = exc_info.value.details()
+    expected_data = (
+        f"The medication 'Test Medication' intake will begin {(datetime.now()+timedelta(days=4)).strftime('%Y-%m-%d')}"
+    )
+    assert expected_data == err
+
+
+@pytest.mark.asyncio
+async def test_get_all_future_schedules(stub_for_schedules, stub_for_users):
+    await stub_for_users.CreateUser(user_pb2.CreateUserRequest())
+    start_date = Timestamp()
+    start_date.FromDatetime(datetime.now() + timedelta(days=4))
+    create_schedule = schedule_pb2.CreateScheduleRequest(
+        user_id=1, medication_name="Test Medication", frequency=15, duration_days=10, start_date=start_date
+    )
+    await stub_for_schedules.CreateSchedule(create_schedule)
+    request = schedule_pb2.GetAllSchedulesRequest(user_id=1)
+    response = MessageToDict(
+        await stub_for_schedules.GetAllSchedules(request),
+        preserving_proto_field_name=True,
+        always_print_fields_with_no_presence=True,
+    )
+    expected_data = {'schedules': [], 'user_id': 1}
     assert expected_data == response

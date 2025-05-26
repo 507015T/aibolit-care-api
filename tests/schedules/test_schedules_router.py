@@ -314,7 +314,7 @@ async def test_get_expired_schedule_for_user(async_client, get_testing_db: Async
         },
     )
     response = await async_client.get("/schedule", params={"schedule_id": 1, "user_id": 1})
-    assert 404 == response.status_code
+    assert 410 == response.status_code
     expected_data = {"detail": "The medication 'Фенибут' intake ended on 2023-06-04"}
     assert expected_data == response.json()
 
@@ -850,3 +850,84 @@ async def test_post_schedule_with_special_symbols_in_med_name(async_client, get_
         get_response = await async_client.get("/schedule", params={"schedule_id": schedule_id, "user_id": 1})
         assert get_response.status_code == 200
         assert get_response.json()["medication_name"] == i
+
+
+@pytest.mark.asyncio
+async def test_get_future_schedule(async_client, get_testing_db: AsyncSession):
+    await async_client.post("/users", json={})
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "Финастерид",
+            "frequency": 4,
+            "duration_days": 4,
+            "user_id": 1,
+            "start_date": (datetime.now() + timedelta(days=4)).strftime("%Y-%m-%d"),
+        },
+    )
+    response = await async_client.get('/schedule', params={'schedule_id': 1, "user_id": 1})
+    assert 409 == response.status_code
+    expected_data = {
+        'detail': f"The medication 'Финастерид' intake will begin {(datetime.now() + timedelta(days=4)).strftime('%Y-%m-%d')}"
+    }
+    assert expected_data == response.json()
+
+
+@pytest.mark.asyncio
+async def test_get_future_next_takings(async_client, get_testing_db: AsyncSession):
+    await async_client.post("/users", json={})
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "Финастерид",
+            "frequency": 4,
+            "duration_days": 4,
+            "user_id": 1,
+            "start_date": (datetime.now() + timedelta(days=4)).strftime("%Y-%m-%d"),
+        },
+    )
+
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "Фенибут",
+            "frequency": 4,
+            "duration_days": 4,
+            "user_id": 1,
+            "start_date": (datetime.now() + timedelta(days=11)).strftime("%Y-%m-%d"),
+        },
+    )
+    response = await async_client.get('/next_takings', params={"user_id": 1})
+    assert 200 == response.status_code
+    expected_data = {"next_takings": [], "user_id": 1}
+    assert expected_data == response.json()
+
+
+@pytest.mark.asyncio
+async def test_get_future_all_schedules(async_client, get_testing_db: AsyncSession):
+    await async_client.post("/users", json={})
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "Финастерид",
+            "frequency": 4,
+            "duration_days": 4,
+            "user_id": 1,
+            "start_date": (datetime.now() + timedelta(days=4)).strftime("%Y-%m-%d"),
+        },
+    )
+
+    await async_client.post(
+        "/schedule",
+        json={
+            "medication_name": "Фенибут",
+            "frequency": 4,
+            "duration_days": 4,
+            "user_id": 1,
+            "start_date": (datetime.now() + timedelta(days=11)).strftime("%Y-%m-%d"),
+        },
+    )
+    response = await async_client.get('/schedules', params={"user_id": 1})
+    assert 200 == response.status_code
+    expected_data = {"schedules": [], "user_id": 1}
+    assert expected_data == response.json()

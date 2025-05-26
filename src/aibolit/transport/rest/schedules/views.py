@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing_extensions import Annotated
 from aibolit.core.dependencies import get_user_service, get_schedule_service
+from aibolit.core.exceptions import ScheduleNotFoundError, ScheduleNotStartedError, ScheduleExpiredError
 from aibolit.services.users.service import UserService
 
 # from aibolit.schemas.schedules.schemas import (
@@ -11,7 +12,7 @@ from aibolit.schemas.openapi_generated.schemas import (
     MedicationSchedule,
     NextTakingsMedicationsResponse,
 )
-from aibolit.services.schedules.service import ScheduleExpiredError, ScheduleNotFound, ScheduleService
+from aibolit.services.schedules.service import ScheduleService
 
 router = APIRouter()
 
@@ -46,8 +47,8 @@ async def get_user_schedule(
     try:
         user_schedule = await schedule_service.get_user_schedule(user_id=user_id, schedule_id=schedule_id)
         return user_schedule
-    except (ScheduleExpiredError, ScheduleNotFound) as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    except (ScheduleExpiredError, ScheduleNotFoundError, ScheduleNotStartedError) as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e))
 
 
 #

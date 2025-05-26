@@ -14,7 +14,7 @@ from aibolit.schemas.schedules.schemas import (
     NextTakingsMedicationsResponse,
 )
 from aibolit.core.config import settings
-from aibolit.core.exceptions import ScheduleExpiredError, ScheduleNotFound
+from aibolit.core.exceptions import ScheduleExpiredError, ScheduleNotFoundError, ScheduleNotStartedError
 
 logger = get_logger(__name__)
 
@@ -42,12 +42,12 @@ class ScheduleService:
         db_schedule = await self._schedules_repo.get_user_schedule(schedule_id, user_id)
         if not db_schedule:
             logger.warning("Schedule not found", user_id=user_id, schedule_id=schedule_id)
-            raise ScheduleNotFound(f"The medication schedule with id={schedule_id} for user={user_id} not found")
+            raise ScheduleNotFoundError(schedule_id, user_id)
         if db_schedule.end_date and db_schedule.end_date < date.today():
             logger.warning("Schedule is expired", schedule_id=schedule_id, end_date=str(db_schedule.end_date))
-            raise ScheduleExpiredError(
-                f"The medication '{db_schedule.medication_name}' intake ended on {db_schedule.end_date}"
-            )
+            raise ScheduleExpiredError(db_schedule.medication_name, db_schedule.end_date)
+        if db_schedule.start_date > date.today():
+            raise ScheduleNotStartedError(db_schedule.medication_name, db_schedule.start_date)
         schedule = self._one_schedule_with_plan(db_schedule)
         return schedule
 

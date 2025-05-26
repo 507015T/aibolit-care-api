@@ -26,6 +26,7 @@ class ScheduleRepo:
         db_request = await self._db.execute(
             select(MedicationScheduleOrm)
             .filter(MedicationScheduleOrm.user_id == user_id)
+            .filter(MedicationScheduleOrm.start_date <= date.today())
             .filter(
                 or_(
                     MedicationScheduleOrm.end_date >= date.today(),

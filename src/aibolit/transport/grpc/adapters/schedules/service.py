@@ -5,7 +5,7 @@ from aibolit.transport.grpc.generated.schedule_pb2_grpc import SchedulesServiceS
 from aibolit.transport.grpc.generated import schedule_pb2
 from aibolit.services.users.service import UserService
 from aibolit.services.schedules.service import ScheduleService
-from aibolit.core.exceptions import ScheduleExpiredError, ScheduleNotFound
+from aibolit.core.exceptions import ScheduleExpiredError, ScheduleNotFoundError, ScheduleNotStartedError
 from aibolit.schemas.schedules.schemas import MedicationScheduleCreateRequest, MedicationSchedule
 from aibolit.core.logger import get_logger
 
@@ -46,12 +46,16 @@ class GrpcScheduleService(SchedulesServiceServicer):
             schedule = await self._schedules_service.get_user_schedule(
                 schedule_id=request.schedule_id, user_id=request.user_id
             )
-        except ScheduleNotFound:
+        except ScheduleNotFoundError as e:
             logger.warning("Schedule not found", user_id=request.user_id, schedule_id=request.schedule_id)
-            await context.abort(grpc.StatusCode.NOT_FOUND, f"Schedule {request.schedule_id} not found")
+            await context.abort(grpc.StatusCode.NOT_FOUND, str(e))
 
         except ScheduleExpiredError as e:
             logger.info("Schedule expired", user_id=request.user_id, schedule_id=request.schedule_id)
+            await context.abort(grpc.StatusCode.FAILED_PRECONDITION, str(e))
+
+        except ScheduleNotStartedError as e:
+            logger.info("Schedule hasn't started yet", user_id=request.user_id, schedule_ind=request.schedule_id)
             await context.abort(grpc.StatusCode.FAILED_PRECONDITION, str(e))
 
         schedule_dict = MedicationSchedule(**schedule.model_dump(mode="python")).model_dump(mode="python")
@@ -63,9 +67,11 @@ class GrpcScheduleService(SchedulesServiceServicer):
     async def GetUserNextTakings(self, request, context: grpc.aio.ServicerContext):
         logger.info("gRPC GetUserNextTakings called", user_id=request.user_id)
         schedules = await self._schedules_service.get_user_next_takings(request.user_id)
-        next_takings = schedules.next_takings[0]
-        next_takings = schedule_pb2.NextTakingsMedications(**next_takings.model_dump(mode="python"))
-        return schedule_pb2.GetUserNextTakingsResponse(user_id=request.user_id, next_takings=[next_takings])
+        next_takings = [
+            schedule_pb2.NextTakingsMedications(**next_taking.model_dump(mode='python'))
+            for next_taking in schedules.next_takings
+        ]
+        return schedule_pb2.GetUserNextTakingsResponse(user_id=request.user_id, next_takings=next_takings)
 
     @staticmethod
     def _to_timestamp(dt: date) -> Timestamp:
