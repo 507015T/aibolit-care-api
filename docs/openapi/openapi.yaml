@@ -23,6 +23,7 @@ components:
             - '22:00'
           items:
             type: string
+          readOnly: true
           title: Daily Plan
           type: array
         duration_days:
@@ -42,6 +43,7 @@ components:
           description: Read Only!
           examples:
           - '2026-01-06'
+          readOnly: true
           title: End Date
         frequency:
           examples:
@@ -159,6 +161,7 @@ components:
         schedule_times:
           items:
             type: string
+          readOnly: true
           title: Schedule Times
           type: array
       required:

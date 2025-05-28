@@ -7,8 +7,8 @@ from fastapi import FastAPI
 
 from aibolit.core.logger import get_logger, configure_logging
 from aibolit.core.middleware import LoggingMiddleware
-from aibolit.transport.rest.schedules.views import router as schedules_router
-from aibolit.transport.rest.users.views import router as users_router
+from aibolit.transport.views.schedules import router as schedules_router
+from aibolit.transport.views.users import router as users_router
 from aibolit.core.database import engine
 from aibolit.core.config import settings
 
@@ -50,7 +50,7 @@ async def serve_rest():
 
 
 async def main():
-    from aibolit.transport.grpc.grpc_client import serve as serve_grpc
+    from aibolit.grpc.grpc_client import serve as serve_grpc
 
     logger.info("Starting GRPC and REST servers...")
     await asyncio.gather(serve_grpc(), serve_rest())

@@ -2,10 +2,10 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from aibolit.core.database import get_db
-from aibolit.repositories.schedules.repository import ScheduleRepo
-from aibolit.repositories.users.repository import UserRepo
-from aibolit.services.schedules.service import ScheduleService
-from aibolit.services.users.service import UserService
+from aibolit.repositories.schedules import ScheduleRepo
+from aibolit.repositories.users import UserRepo
+from aibolit.services.schedules import ScheduleService
+from aibolit.services.users import UserService
 
 
 def get_users_repo(session: Annotated[AsyncSession, Depends(get_db)]) -> UserRepo:

@@ -20,8 +20,8 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from aibolit.core.database import Base
-from aibolit.models.users.models import UserOrm
-from aibolit.models.schedules.models import MedicationScheduleOrm
+from aibolit.models.users import UserOrm
+from aibolit.models.schedules import MedicationScheduleOrm
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

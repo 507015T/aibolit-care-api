@@ -7,14 +7,14 @@ from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from aibolit.core.database import Base, get_db
-from aibolit.repositories.schedules.repository import ScheduleRepo
-from aibolit.repositories.users.repository import UserRepo
+from aibolit.repositories.schedules import ScheduleRepo
+from aibolit.repositories.users import UserRepo
 from aibolit.main import make_app
-from aibolit.services.users.service import UserService
-from aibolit.services.schedules.service import ScheduleService
-from aibolit.transport.grpc.adapters.schedules.service import GrpcScheduleService
-from aibolit.transport.grpc.adapters.users.service import GrpcUserService
-from aibolit.transport.grpc.generated import schedule_pb2_grpc, user_pb2_grpc
+from aibolit.services.users import UserService
+from aibolit.services.schedules import ScheduleService
+from aibolit.grpc.adapters.schedules import GrpcScheduleService
+from aibolit.grpc.adapters.users import GrpcUserService
+from aibolit.grpc.generated import schedules_pb2_grpc, users_pb2_grpc
 from aibolit.core.config import settings
 
 
@@ -53,8 +53,8 @@ async def grpc_test_channel(get_testing_db: AsyncSession):
     users_service, schedules_service = UserService(users_repo), ScheduleService(schedules_repo)
 
     server = grpc.aio.server()
-    user_pb2_grpc.add_UserServiceServicer_to_server(GrpcUserService(users_service), server)
-    schedule_pb2_grpc.add_SchedulesServiceServicer_to_server(
+    users_pb2_grpc.add_UserServiceServicer_to_server(GrpcUserService(users_service), server)
+    schedules_pb2_grpc.add_SchedulesServiceServicer_to_server(
         GrpcScheduleService(schedules_service, users_service), server
     )
     port = server.add_insecure_port("[::]:0")
@@ -70,12 +70,12 @@ async def grpc_test_channel(get_testing_db: AsyncSession):
 
 @pytest_asyncio.fixture
 async def stub_for_schedules(grpc_test_channel):
-    return schedule_pb2_grpc.SchedulesServiceStub(grpc_test_channel)
+    return schedules_pb2_grpc.SchedulesServiceStub(grpc_test_channel)
 
 
 @pytest_asyncio.fixture
 async def stub_for_users(grpc_test_channel):
-    return user_pb2_grpc.UserServiceStub(grpc_test_channel)
+    return users_pb2_grpc.UserServiceStub(grpc_test_channel)
 
 
 @pytest_asyncio.fixture(autouse=True)

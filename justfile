@@ -53,17 +53,18 @@ tests:
 # Run E2E tests for gRPC
 [group('testing')]
 test-grpc:
-    uv run pytest tests/test_schedule_servicer.py -s -v
+    uv run pytest tests/grpc/ -s -v
 
 # Run E2E tests for REST API
 [group('testing')]
 test-api:
-    uv run pytest tests/test_schedule_api.py -s -v
+    uv run pytest tests/users/test_views.py -s -v
+    uv run pytest tests/schedules/test_views.py -s -v
 
 # Run unit tests for plan generation, time rounding, timeframe check
 [group('testing')]
 test-utils:
-    uv run pytest tests/test_schedule_utils.py -s -v
+    uv run pytest tests/schedules/test_services_utils.py -s -v
 
 # Run all tests and calculate coverage
 [group('testing')]
@@ -132,22 +133,22 @@ app:
 [group('generating')]
 generate-openapi:
     cd docs/openapi/ && uv run convert_script.py && cd ../..
-    mkdir -p src/aibolit/schemas/openapi_generated
-    touch src/aibolit/schemas/openapi_generated/__init__.py
     uv run datamodel-codegen \
         --input docs/openapi/openapi.json \
         --input-file-type openapi \
         --output-model-type pydantic_v2.BaseModel \
-        --output src/aibolit/schemas/openapi_generated/schemas.py
+        --output src/aibolit/schemas/openapi_generated.py
 
 # Generate Python code from .proto files for gRPC
 [group('generating')]
 generate-grpc:
-	uv run -m grpc_tools.protoc \
-		-Iaibolit/transport/grpc/generated=src/aibolit/transport/grpc/protos \
-		--python_out=src --grpc_python_out=src \
-		src/aibolit/transport/grpc/protos/schedule.proto
-	uv run -m grpc_tools.protoc \
-		-Iaibolit/transport/grpc/generated=src/aibolit/transport/grpc/protos \
-		--python_out=src --grpc_python_out=src \
-		src/aibolit/transport/grpc/protos/user.proto
+    mkdir -p src/aibolit/grpc/generated
+    touch src/aibolit/grpc/generated/__init__.py
+    uv run -m grpc_tools.protoc \
+        -Iaibolit/grpc/generated=src/aibolit/grpc/protos \
+        --python_out=src --grpc_python_out=src \
+        src/aibolit/grpc/protos/schedules.proto
+    uv run -m grpc_tools.protoc \
+        -Iaibolit/grpc/generated=src/aibolit/grpc/protos \
+        --python_out=src --grpc_python_out=src \
+        src/aibolit/grpc/protos/users.proto
