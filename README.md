@@ -168,7 +168,7 @@ uv run uvicorn src.aibolit.main:make_app --factory
 ### Start gRPC server
 
 ```bash
-uv run src/aibolit/transport/grpc/grpc_client.py
+uv run src/aibolit/grpc/grpc_client.py
 ```
 
 ---
