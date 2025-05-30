@@ -5,6 +5,8 @@ from httpx import AsyncClient
 from httpx import ASGITransport
 from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from pydantic._internal._generate_schema import GenerateSchema
+from pydantic_core import core_schema
 
 from aibolit.core.database import Base, get_db
 from aibolit.repositories.schedules import ScheduleRepo
@@ -18,13 +20,13 @@ from aibolit.grpc.generated import schedules_pb2_grpc, users_pb2_grpc
 from aibolit.core.config import settings
 
 
-SQLALCHEMY_DATABASE_URL = (
+TEST_SQLALCHEMY_DATABASE_URL = (
     f"postgresql+asyncpg://{settings.TEST_DB_USER}:"
     f"{settings.TEST_DB_PASS}@{settings.TEST_DB_HOST}:"
     f"{settings.TEST_DB_PORT}/{settings.TEST_DB_NAME}"
 )
 
-engine = create_async_engine(url=SQLALCHEMY_DATABASE_URL, echo=False, poolclass=NullPool)
+engine = create_async_engine(url=TEST_SQLALCHEMY_DATABASE_URL, echo=False, poolclass=NullPool)
 TestingSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
 
 
@@ -81,6 +83,19 @@ async def stub_for_users(grpc_test_channel):
 @pytest_asyncio.fixture(autouse=True)
 async def suppress_logs():
     """Fixture to suppress logs during tests"""
-    logging.disable(logging.CRITICAL)  # Отключаем все логи
+    logging.disable(logging.CRITICAL)  # Off all logs
     yield
     logging.disable(logging.NOTSET)
+
+
+# for fix pytest freezegun
+initial_match_type = GenerateSchema.match_type
+
+
+def match_type(self, obj):
+    if getattr(obj, "__name__", None) == "date":
+        return core_schema.datetime_schema()
+    return initial_match_type(self, obj)
+
+
+GenerateSchema.match_type = match_type
